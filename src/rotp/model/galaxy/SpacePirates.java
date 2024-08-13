@@ -15,11 +15,9 @@
  */
 package rotp.model.galaxy;
 
-import java.awt.Image;
-
 import rotp.model.colony.Colony;
 import rotp.model.combat.CombatStackSpacePirates;
-import rotp.ui.main.GalaxyMapPanel;
+import rotp.model.ships.ShipDesign;
 
 // modnar: add Space Pirates random event
 public class SpacePirates extends SpaceMonster {
@@ -48,6 +46,8 @@ public class SpacePirates extends SpaceMonster {
         }        
     }
     // ShipMonster overriders
-	@Override public int maxMapScale()	{ return GalaxyMapPanel.MAX_FLEET_HUGE_SCALE; }
-	@Override public Image shipImage()	{ return image("SPACE_PIRATES"); }
+	@Override protected ShipDesign designRotP() {
+		// TODO BR: SpacePirates Fake Design
+		return null;
+	}
 }

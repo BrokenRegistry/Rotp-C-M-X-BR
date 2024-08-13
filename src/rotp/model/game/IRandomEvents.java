@@ -45,9 +45,11 @@ public interface IRandomEvents extends IBaseOptsTools {
 	default boolean monstersGiveLoot()			{ return monstersGiveLoots.get().equalsIgnoreCase("Yes"); }
 
 	ParamList    monstersLevel	= new ParamList( MOD_UI, "MONSTERS_LEVEL", "Normal")
+		.setDefaultValue(MOO1_DEFAULT, "MoO1")
 		.showFullGuide(true)
 		.put("Normal", 	MOD_UI + "MONSTERS_LEVEL_NORMAL")
-		.put("Easy",		MOD_UI + "MONSTERS_LEVEL_EASY");
+		.put("Easy",	MOD_UI + "MONSTERS_LEVEL_EASY")
+		.put("MoO1",	MOD_UI + "MONSTERS_LEVEL_MOO1");
 	default String	monstersLevelKey()			{ return monstersLevel.get(); }
 	default float	monstersLevel()				{
 		switch (monstersLevel.get()) {
@@ -56,9 +58,12 @@ public interface IRandomEvents extends IBaseOptsTools {
 			default:		return 1.0f;
 		}
 	}
+	ParamBoolean isMoO1Monster				= new ParamBoolean(MOD_UI, "IS_MOO1_MONSTER", false)
+			.setDefaultValue(MOO1_DEFAULT, true);
+	default Boolean	isMoO1Monster()				{ return isMoO1Monster.get(); }
 	ParamList    monstersGNNNotification	= new ParamList( MOD_UI, "MONSTERS_GNN", "All")
 		.showFullGuide(true)
-		.put("All", 		MOD_UI + "MONSTERS_GNN_ALL")
+		.put("All", 	MOD_UI + "MONSTERS_GNN_ALL")
 		.put("New",		MOD_UI + "MONSTERS_GNN_NEW")
 		.put("First",	MOD_UI + "MONSTERS_GNN_FIRST");
 	default String	monstersGNNNotification()	{ return monstersGNNNotification.get(); }
@@ -95,16 +100,19 @@ public interface IRandomEvents extends IBaseOptsTools {
 			.specialNegative(SPECIAL_MULTIPLE);
 
 	ParamInteger piratesMaxSystems	= new ParamInteger(MOD_UI, "PIRATES_MAX_SYSTEMS", 0)
+			.setDefaultValue(MOO1_DEFAULT, 5) // Not MoO1 Monster but the spirit is there.
 			.setLimits(0, MAX_SYSTEMS)
 			.setIncrements(1, 5, 20)
 			.specialZero(SPECIAL_UNLIMITED);
 	default int selectedPiratesMaxSystems()		{ return piratesMaxSystems.get(); }
 	ParamInteger amoebaMaxSystems	= new ParamInteger(MOD_UI, "AMOEBA_MAX_SYSTEMS",  0)
+			.setDefaultValue(MOO1_DEFAULT, 5)
 			.setLimits(0, MAX_SYSTEMS)
 			.setIncrements(1, 5, 20)
 			.specialZero(SPECIAL_UNLIMITED);
 	default int selectedAmoebaMaxSystems()		{ return amoebaMaxSystems.get(); }
 	ParamInteger crystalMaxSystems	= new ParamInteger(MOD_UI, "CRYSTAL_MAX_SYSTEMS", 0)
+			.setDefaultValue(MOO1_DEFAULT, 5)
 			.setLimits(0, MAX_SYSTEMS)
 			.setIncrements(1, 5, 20)
 			.specialZero(SPECIAL_UNLIMITED);
@@ -268,6 +276,7 @@ public interface IRandomEvents extends IBaseOptsTools {
 
 				headerSpacer,
 				IPreGameOptions.guardianMonstersLevel,
+				isMoO1Monster,
 				
 				headerSpacer,
 				new ParamTitle("RANDOM_EVENTS_MONSTERS"),

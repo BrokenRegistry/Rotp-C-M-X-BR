@@ -848,9 +848,7 @@ public class NewShipTemplate implements Base {
         else
             return dmgSpecs.remove(0);
     }
-    private boolean ineffective(ShipDesign d) {
-        return d.perTurnDamage() == 0;
-    }
+    // private boolean ineffective(ShipDesign d) { return d.perTurnDamage() == 0; }
     class DesignDamageSpec {
         public int numWeapons = 0;
         public ShipWeapon weapon;

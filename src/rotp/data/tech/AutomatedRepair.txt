@@ -10,3 +10,14 @@ name:   AUTOREPAIR_1_NAME
 brief:  AUTOREPAIR_1_BRIEF
 detail: AUTOREPAIR_1_DETAIL
 
+[tech]
+seq:    2
+name:   AUTOREPAIR_2_NAME
+brief:  AUTOREPAIR_2_BRIEF
+detail: AUTOREPAIR_2_DETAIL
+
+[tech]
+seq:    3
+name:   AUTOREPAIR_3_NAME
+brief:  AUTOREPAIR_3_BRIEF
+detail: AUTOREPAIR_3_DETAIL

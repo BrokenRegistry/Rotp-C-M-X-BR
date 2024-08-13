@@ -55,6 +55,7 @@ public final class ShipDesign extends Design {
     private final ShipWeapon[] weapon = new ShipWeapon[maxWeapons];
     private final int[] wpnCount = new int[maxWeapons];
     private final ShipSpecial[] special = new ShipSpecial[maxSpecials];
+    private ShipSpecial[] extraSpecial; // BR: for some Space Monsters
     private int size = SMALL;
     private int mission = SCOUT;
     private int unusedTurns = 0;     // # turns while built but unused by FleetCommander
@@ -68,6 +69,7 @@ public final class ShipDesign extends Design {
     private String iconKey;
     private int shipColor;
     private final Integer hashCode;
+    private int customHitPoints = 0; // BR: for monsters
     private transient ImageIcon icon;
     private transient Image image;
     private transient float costBC;
@@ -93,6 +95,8 @@ public final class ShipDesign extends Design {
     @Override
     public boolean isShip()                 { return true; }
 
+    public int customHitPoints()            { return customHitPoints; }
+    public void customHitPoints(int hit)    { customHitPoints = hit; }
     public ShipComputer computer()          { return computer; }
     public void computer(ShipComputer c)    { computer = c; }
     public ShipShield shield()              { return shield; }
@@ -137,6 +141,7 @@ public final class ShipDesign extends Design {
     public int shipColor()                  { return shipColor; }
     public void shipColor(int i)            { shipColor = i; }
     public void resetImage()                { image = null; }
+    public void setImage(Image img)         { image = img; } // BR: for Monsters
     @Override
     public Image image() {
         if (image == null) {
@@ -163,10 +168,20 @@ public final class ShipDesign extends Design {
             icon = icon(iconKey);
         return icon;
     }
-    public ShipDesign() {
-        this(SMALL);
-    }
-    public ShipDesign(int sz) {
+    public ShipDesign()            { this(SMALL); }
+    public ShipDesign(int sz)      {
+    	if (sz<0) { // BR: for custom Hit points design
+    		customHitPoints = -sz;
+    		if (customHitPoints < 100)
+    			sz = SMALL;
+    		else if (customHitPoints < 500)
+    			sz = MEDIUM;
+    		else if (customHitPoints < 2500)
+    			sz = LARGE;
+    		else
+    			sz = HUGE;
+        }
+
         size(sz);
         active = false;
         for (int i=0; i<maxWeapons(); i++)  wpnCount(i,0);
@@ -549,6 +564,8 @@ public final class ShipDesign extends Design {
     public int weaponMax(int i)     { return (int)Math.max(0, weapon(i).max(this, i));  }
     public int baseHits()           { return  baseHits(size()); }
     public int baseHits(int sizeId) {
+    	if (customHitPoints>0) // BR: for Monsters
+    		return customHitPoints;
     	// modnar: change base ship HP for new races
     	// modnar: NeoHumans, 66.6% HP
     	// BR: put the method in Race

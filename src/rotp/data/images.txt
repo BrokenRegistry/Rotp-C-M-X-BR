@@ -15,9 +15,11 @@ ROTP_MOD_ICON1      | images/rotp_custom_ico_4_medium.png
 ROTP_MOD_ICON2      | images/rotp_custom_ico_4_small.png
 ROTP_MOD_ICON3      | images/rotp_custom_ico_4_tiny_text.png
 
+TECH_AMOEBA_STREAM            | images/techs/Death_Ray.png
 TECH_ANTIMATTER_BOMB          | images/techs/Anti-Matter_Bomb.png
 TECH_ANTIMATTER_TORPEDO       | images/techs/Anti-Matter_Torpedo.png
 TECH_AUTO_BLASTER             | images/techs/Auto_Blaster.png
+TECH_CRYSTAL_RAY              | images/techs/Death_Ray.png
 TECH_DEATH_RAY                | images/techs/Death_Ray.png
 TECH_DISRUPTOR                | images/techs/Disruptor.png
 TECH_FUSION_BEAM              | images/techs/Fusion_Beam.png
@@ -88,9 +90,12 @@ TECH_MISSILE_SHIELD_01        | images/techs/Anti-Missile_Rockets.png
 TECH_MISSILE_SHIELD_02        | images/techs/Zyro_Shield.png
 TECH_MISSILE_SHIELD_03        | images/techs/Lightning_Shield.png
 TECH_SQUID_INK                | images/techs/Black_Hole_Generator.png
+TECH_AMOEBA_EAT_SHIPS         | images/techs/Black_Hole_Generator.png
+TECH_RESIST_REPULSOR          | images/techs/Zyro_Shield.png
 
 TECH_ENERGY_PULSAR            | images/techs/Energy_Pulsar.png
 TECH_IONIC_PULSAR             | images/techs/Ionic_Pulsar.png
+TECH_CRYSTAL_PULSAR           | images/techs/Ionic_Pulsar.png
 
 TECH_CLONING                  | images/techs/Cloning.png
 TECH_ADV_CLONING              | images/techs/Advanced_Cloning.png
@@ -149,6 +154,7 @@ TECH_INERTIAL_STABILIZER      | images/techs/Inertial_Stabilizer.png
 TECH_INERTIAL_NULLIFIER       | images/techs/Inertial_Nullifier.png
 TECH_TECH_NULLIFIER           | images/techs/Technology_Nullifier.png
 TECH_WARP_DISSIPATOR          | images/techs/Warp_Dissipator.png
+TECH_CRYSTAL_NULLIFIER        | images/techs/Technology_Nullifier.png
 
 TECH_ARMOR_DURALLOY           | images/techs/Duralloy_Armor.png
 TECH_ARMOR_ZORTRIUM           | images/techs/Zortrium_Armor.png
@@ -158,6 +164,8 @@ TECH_ARMOR_ADAMANTIUM         | images/techs/Adamantium_Armor.png
 TECH_ARMOR_NEUTRONIUM         | images/techs/Neutronium_Armor.png
 TECH_AUTOMATED_REPAIR_1       | images/techs/Automated_Repair_01.png
 TECH_AUTOMATED_REPAIR_2       | images/techs/Automated_Repair_02.png
+TECH_LIVE_REPAIR              | images/techs/Automated_Repair_01.png
+TECH_TECH_MITOSIS             | images/techs/Automated_Repair_02.png
 TECH_BATTLE_COMPUTER_01       | images/techs/Battle_Computer_01.png
 TECH_BATTLE_COMPUTER_02       | images/techs/Battle_Computer_02.png
 TECH_BATTLE_COMPUTER_03       | images/techs/Battle_Computer_03.png

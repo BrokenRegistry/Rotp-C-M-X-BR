@@ -62,7 +62,7 @@ public class RandomEventIndustrialAccident extends AbstractRandomEvent {
         sysId = targetSystem.id;
         
         targetSystem.addEvent(new SystemRandomEvent("SYSEVENT_ACCIDENT"));
-        targetSystem.planet().irradiateEnvironment();
+        targetSystem.planet().irradiateEnvironment(0);
         float maxWaste = targetSystem.planet().maxWaste(); // calc max waste after irradiation
         targetSystem.planet().addWaste(maxWaste);
         targetSystem.planet().removeExcessWaste();

@@ -211,9 +211,9 @@ public class NewShipTemplate implements Base {
         // Same Speed Allowed Flag: default false, alkari/mrrshan true
         boolean sameSpeedAllowed = race.shipDesignMods[SPEED_MATCHING] > 0; 
         // Reinforced Armor Allowed Flag: default true, alkari/klackon false
-        boolean reinforcedArmorAllowed = race.shipDesignMods[REINFORCED_ARMOR] > 0; 
+        // boolean reinforcedArmorAllowed = race.shipDesignMods[REINFORCED_ARMOR] > 0; 
         // modnar: don't allow Reinforced Armor, force reinforcedArmorAllowed to be false
-        reinforcedArmorAllowed = false;
+        // reinforcedArmorAllowed = false;
         // Allow Bio Weapons: default false, silicoid true  (adjusted elsewhere for leader type)
         boolean allowBioWeapons = race.shipDesignMods[BIO_WEAPONS] > 0;  
         
@@ -237,7 +237,7 @@ public class NewShipTemplate implements Base {
         float shieldSpace = modulesSpace * shieldWeight / weightsSum;
         float ecmSpace = modulesSpace * ecmWeight / weightsSum;
         float maneuverSpace = modulesSpace * maneuverWeight / weightsSum;
-        float armorSpace = modulesSpace * armorWeight / weightsSum;
+        // float armorSpace = modulesSpace * armorWeight / weightsSum;
         float specialsSpace = modulesSpace * specialsWeight / weightsSum;
         
         // after installing a system we'll inevitably have leftovers
@@ -379,14 +379,14 @@ public class NewShipTemplate implements Base {
         d.engine(ai.lab().fastestEngine());
     }
 
-    private void setBestBattleComputer(ShipDesigner ai, ShipDesign d) {
+    /* private void setBestBattleComputer(ShipDesigner ai, ShipDesign d) {
         List<ShipComputer> comps = ai.lab().computers();
         for (int i=comps.size()-1; i >=0; i--) {
             d.computer(comps.get(i));
             if (d.availableSpace() >= 0)
                 return;
         }
-    }
+    } */
     
     // modnar: add setFittingBattleComputer
     private float setFittingBattleComputer(ShipDesigner ai, ShipDesign d, float spaceAllowed) {
@@ -436,7 +436,7 @@ public class NewShipTemplate implements Base {
         }
     }
     
-    private float setFittingArmor(ShipDesigner ai, ShipDesign d, float spaceAllowed, boolean reinforcedArmorAllowed){
+    /* private float setFittingArmor(ShipDesigner ai, ShipDesign d, float spaceAllowed, boolean reinforcedArmorAllowed){
         float initialSpace = d.availableSpace();
 
         boolean foundIt = false;
@@ -455,7 +455,7 @@ public class NewShipTemplate implements Base {
             }
         }
         return (spaceAllowed - (initialSpace - d.availableSpace()));
-    }
+    } */
 
     private float setFittingShields(ShipDesigner ai, ShipDesign d, float spaceAllowed) {
         float initialSpace = d.availableSpace();
@@ -996,9 +996,9 @@ public class NewShipTemplate implements Base {
         else
             return dmgSpecs.remove(0);
     }
-    private boolean ineffective(ShipDesign d) {
+    /* private boolean ineffective(ShipDesign d) {
         return d.perTurnDamage() == 0;
-    }
+    } */
     class DesignDamageSpec {
         public int numWeapons = 0;
         public ShipWeapon weapon;

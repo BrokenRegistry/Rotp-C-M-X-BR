@@ -129,5 +129,55 @@ public class GuardianJellyfish extends SpaceMonster {
 		// lab.iconifyDesign(design);
 		return design;
 	}
+	@Override protected ShipDesign designRotP()	{
+		ShipDesignLab lab = empire().shipLab();
+		
+		// System.out.println();
+		// System.out.print("design ");
+		ShipDesign design = lab.newBlankDesign(Math.max(ShipDesign.MEDIUM,
+								stackLevel(ShipDesign.LARGE, ShipDesign.HUGE)));
+		design.mission	(ShipDesign.DESTROYER);
 
+		// System.out.print("engine ");
+		List<ShipEngine> engines = lab.engines();
+		design.engine	(engines.get(stackLevel(0, engines.size()-1)));
+
+		// System.out.print("computer ");
+		List<ShipComputer> computers = lab.computers();
+		design.computer	(computers.get(stackLevel(2, computers.size()-1)));
+
+		// System.out.print("armor ");
+		List<ShipArmor> armors = lab.armors();
+		design.armor	(armors.get(stackLevel(2, armors.size()-1)));
+
+		// System.out.print("shield ");
+		List<ShipShield> shields = lab.shields();
+		design.shield	(shields.get(stackLevel(2, shields.size()-1)));
+
+		// System.out.print("ecm ");
+		List<ShipECM> ecms = lab.ecms();
+		design.ecm		(ecms.get(stackLevel(2, ecms.size()-1)));
+
+		// System.out.print("maneuver ");
+		List<ShipManeuver> maneuvers = lab.maneuvers();
+		design.maneuver	(maneuvers.get(stackLevel(0, maneuvers.size()-1)));
+
+		// System.out.print("weapon ");
+		int wpnAll = max(1, stackLevel(10));
+		for (int i=4; i>0; i--) {
+			int count = wpnAll/i;
+			if (count != 0) {
+				// jellyfish darts
+				design.weapon(i-1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
+				// design.addWeapon(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
+				wpnAll -= count;
+			}
+		}
+		design.special(0, lab.specialBattleScanner());
+		// design.special(1, lab.specialTeleporter());
+		// design.special(2, lab.specialCloak());
+		// design.name(text(IMAGE_KEY));
+		// lab.iconifyDesign(design);
+		return design;
+	}
 }

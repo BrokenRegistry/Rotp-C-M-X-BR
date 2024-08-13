@@ -614,14 +614,26 @@ public class ShipDesignLab implements Base, Serializable {
         }
         return null;
     }
-    public ShipSpecial specialReserveFuel() {
+    public ShipSpecial getSpecial(String s, int seq) {
+        for (ShipSpecial special : specials()) {
+            if (special.name().equals(s) && special.sequence()==seq)
+                return special;
+        }
+        return null;
+    }
+    public ShipSpecial specialSquidInk()        { return getSpecial("Squid Ink", 0); }
+    public ShipSpecial specialAmoebaEatShips()  { return getSpecial("Eat Ships", 0); }
+    public ShipSpecial specialAutomatedRepair() { return getSpecial("AutomatedRepair", 0); }
+    public ShipSpecial specialAdvDamControl()   { return getSpecial("AutomatedRepair", 1); }
+
+    public ShipSpecial specialReserveFuel()     {
         for (ShipSpecial spec : specials()) {
             if (spec.isFuelRange())
                 return spec;
         }
         return null;
     }
-    public ShipSpecial specialBattleScanner() {
+    public ShipSpecial specialBattleScanner()   {
         for (ShipSpecial spec : specials()) {
             if (spec.allowsScanning())
                 return spec;

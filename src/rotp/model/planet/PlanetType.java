@@ -136,10 +136,10 @@ public class PlanetType implements Base {
 
     public String key()                       { return key; }
     public void key(String s)                 { key = s; }
-    public String descBiological()               { return descBiological; }
-    public void descBiological(String s)         { descBiological = s; }
-    public String descSilicoid()               { return descSilicoid; }
-    public void descSilicoid(String s)         { descSilicoid = s; }
+    public String descBiological()            { return descBiological; }
+    public void descBiological(String s)      { descBiological = s; }
+    public String descSilicoid()              { return descSilicoid; }
+    public void descSilicoid(String s)        { descSilicoid = s; }
     public int hostility()                    { return hostility; }
     public void hostility(int i)              { hostility = i; }
     public String terrainKey()                { return terrainKey; }

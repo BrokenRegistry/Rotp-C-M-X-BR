@@ -11,3 +11,9 @@ name:   PULSAR_1_NAME
 brief:  PULSAR_1_BRIEF
 detail: PULSAR_1_DETAIL
 
+[tech]
+seq:    2
+name:   PULSAR_2_NAME
+brief:  PULSAR_2_BRIEF
+detail: PULSAR_2_DETAIL
+

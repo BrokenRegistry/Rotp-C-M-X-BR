@@ -777,7 +777,7 @@ public class VIPDesignView implements IVIPConsole {
 		String out = selectionUI.getOptions(bracketed(DESIGN_SPECIAL_TYPE, "#"), "#");
 		return out;
 	}
-	private boolean isValidSpecialSlot(int tag)	{ return tag>0 && tag<=maxSpecials; }
+	private boolean isValidSpecialSlot(int tag)	{ return tag>0 && tag<=maxSpecials(); }
 	private boolean isValidSpecialType(int tag)	{
 		return tag>0 && tag<=designUI().specialSelectionUI.numComponents();
 	}
@@ -795,7 +795,7 @@ public class VIPDesignView implements IVIPConsole {
 		String out = "";
 		String sep = "";
 		String label = "Special Device ";
-		for (int slot=0; slot<maxSpecials; slot++) {
+		for (int slot=0; slot<maxSpecials(); slot++) {
 			out += sep + componentInfo(design.special(slot), label + (slot+1));
 			sep = NEWLINE;
 		}

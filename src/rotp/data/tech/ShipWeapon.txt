@@ -125,15 +125,15 @@ seq:    21
 name:   SHIPWPN_21_NAME
 detail: SHIPWPN_21_DETAIL
 
-//[tech]
-//seq:    22
-//name:   SHIPWPN_22_NAME
-//detail: SHIPWPN_22_DETAIL
+[tech]
+seq:    22
+name:   SHIPWPN_22_NAME
+detail: SHIPWPN_22_DETAIL
 
-//[tech]
-//seq:    23
-//name:   SHIPWPN_23_NAME
-//detail: SHIPWPN_23_DETAIL
+[tech]
+seq:    23
+name:   SHIPWPN_23_NAME
+detail: SHIPWPN_23_DETAIL
 
 [tech]
 seq:    24

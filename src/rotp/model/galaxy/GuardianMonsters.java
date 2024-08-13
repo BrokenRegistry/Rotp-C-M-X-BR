@@ -15,40 +15,15 @@
  */
 package rotp.model.galaxy;
 
-import java.awt.Image;
-
-import rotp.model.empires.Empire;
-import rotp.model.ships.ShipDesign;
-
 public abstract class GuardianMonsters extends SpaceMonster {
 	private static final long serialVersionUID = 1L;
-	private final String IMAGE_KEY;
-	protected transient ShipDesign[] designs;
-	private transient int designTurn;
 	
 	public GuardianMonsters(String name, int empId, Float speed, Float level) {
 		super(name, empId, speed, level);
-		IMAGE_KEY = name;
 	}
-	abstract void initDesigns();
 
-	@Override public Image	 image()						{ return image(IMAGE_KEY); }
 	@Override public void	 plunder()						{ removeGuardian(); }
-	@Override public Image	 shipImage()					{ return image(IMAGE_KEY); }
 	@Override public boolean isMonsterGuardian()			{ return true; }
 	@Override public boolean isGuardian()					{ return true; }
-	@Override public boolean isArmed()						{ return true; }
-	@Override public boolean isArmedForShipCombat()			{ return true; }
-	@Override public boolean isPotentiallyArmed(Empire e)	{ return true; }
-	@Override public ShipDesign design(int i)				{ return designs()[i]; }
-    @Override protected ShipDesign[] designs()				{
-		// To allow the player to change the level in game.
-		int turn = galaxy().currentTurn();
-		if (designs == null || designTurn != turn)			{
-			designTurn = turn;
-			clearFleetStats();
-			initDesigns();
-		}
-		return designs;
-    }
+
 }

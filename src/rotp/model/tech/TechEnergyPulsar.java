@@ -51,19 +51,27 @@ public final class TechEnergyPulsar extends Tech {
         techType = Tech.ENERGY_PULSAR;
 
         switch(typeSeq) {
-            case 0:
+            case 0:	// Energy Pulsar
                 cost = 75;
                 size = 150;
                 power = 250;
                 firstShipDamage = 5;
                 extraShipDamage = 0.5f;
                 break;
-            case 1:
+            case 1:	// Ionic Pulsar
                 cost = 150;
                 size = 400;
                 power = 750;
                 firstShipDamage = 10;
                 extraShipDamage = 1.0f;
+                break;
+            case 2: // Crystal Pulsar
+                cost = 150;
+                size = 800;
+                power = 1500;
+                firstShipDamage = 1000;
+                extraShipDamage = 1.0f;
+                restricted = true;
                 break;
         }
     }

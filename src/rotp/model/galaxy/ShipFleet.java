@@ -1281,4 +1281,5 @@ public class ShipFleet extends FleetBase {
         int count = Arrays.stream(this.num).sum();
         return count == 1;
     }
+    public void degradePlanet(StarSystem sys)	{  } // BR:
 }

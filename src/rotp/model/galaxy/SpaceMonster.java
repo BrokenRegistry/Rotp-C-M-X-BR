@@ -34,6 +34,8 @@ import rotp.model.empires.Empire;
 import rotp.model.events.IMonsterPos;
 import rotp.model.incidents.DiplomaticIncident;
 import rotp.model.incidents.KillMonsterIncident;
+import rotp.model.ships.ShipDesign;
+import rotp.model.ships.ShipDesignLab;
 import rotp.ui.BasePanel;
 import rotp.ui.main.GalaxyMapPanel;
 
@@ -48,6 +50,8 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	private transient BufferedImage shipImage;
 	public  IMonsterPos event;
 	private transient Float stackLevel = 1f;
+	private transient int designTurn;
+	protected transient ShipDesign[] designs;
 	
 	public SpaceMonster(String name, int empId, Float speed, Float level)	{
 		super(empId, 0, 0);
@@ -58,6 +62,27 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 			travelSpeed = 1f / (1.5f * max(1, 100.0f/galaxy().maxNumStarSystems()));
 		else
 			travelSpeed = speed;
+	}
+	
+	abstract protected ShipDesign designRotP();
+	protected ShipDesign designMoO1()		{ return designRotP(); }
+	protected void initDesigns()			{
+		designs = new ShipDesign[ShipDesignLab.MAX_DESIGNS];
+		num(0, 1);
+		num(1, 0);
+		num(2, 0);
+		num(3, 0);
+		num(4, 0);
+		num(5, 0);
+		ShipDesign des;
+		if (options().isMoO1Monster())
+			des = designMoO1();
+		else
+			des = designRotP();
+		des.setImage(image());
+		des.name(text(nameKey));
+		designs[0] = des;
+
 	}
 
 	public Empire lastAttacker()			{ return galaxy().empire(lastAttackerId); }
@@ -71,6 +96,7 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		return combatStacks; 
 	}
 	public Image image()					{ return image(nameKey); }
+    public Image shipImage()				{ return image(); };
 	public void	 initCombat()				{ 
 		stackLevel(); // initialize
 //		if (monsterLevel == null) {
@@ -189,6 +215,8 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	@Override public boolean inTransit()			{ return !isGuardian(); }
 	@Override public boolean deployed()				{ return false; }
 	@Override public int	 maxMapScale()			{ return GalaxyMapPanel.MAX_FLEET_HUGE_SCALE; }
+	@Override public boolean isArmed()				{ return true; }
+	@Override public boolean isArmedForShipCombat()	{ return true; }
 	@Override public boolean isPotentiallyArmed(Empire e)	{ return true; }
 	@Override public boolean decideWhetherDisplayed(GalaxyMapPanel map) {
 		if (!map.displays(this))
@@ -198,7 +226,19 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		return true;
 	}
     @Override public Empire	 empire()            	{ return galaxy().orionEmpire(); }
-	public abstract Image shipImage();
+    @Override protected ShipDesign[] designs()		{
+		// To allow the player to change the level in game.
+		int turn = galaxy().currentTurn();
+		if (designs == null || designTurn != turn)			{
+			designTurn = turn;
+			clearFleetStats();
+			initDesigns();
+		}
+		return designs;
+    }
+	@Override public ShipDesign design(int i)		{ return designs()[i]; }
+	@Override public StarSystem system()			{ return this.destination(); }
+
 	public boolean alive()	{ 
 		boolean alive = false;
 		for (CombatStack st: combatStacks) {
@@ -220,8 +260,34 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		setXY(s);
 	}
 	protected DiplomaticIncident killIncident(Empire emp) { return KillMonsterIncident.create(emp.id, lastAttackerId, nameKey); }
-	
-	private void notifyGalaxy()					{
+
+    protected int moO1Level (int base, int step, int min, float overStep, float lowStep)	{
+		float upStep	= 0.25f;
+		float downStep	= 0.1f;
+		float downLimit	= -2 * downStep;
+		float upLimit	=  2 * upStep;
+		float pFactor	= options().aiProductionModifier() - 1;
+
+		// Above MoO1 max difficulty
+		if (pFactor >= upLimit) {
+			pFactor -= upLimit;
+			base  += upLimit * step;
+			return base + round(pFactor/overStep * step);
+		}
+
+		// Standard MoO1 difficulties
+		if (pFactor >= 0)
+			return base + round(pFactor/upStep * step);
+		if (pFactor >= downLimit)
+			return base + round(pFactor/downStep * step);
+
+		// Bellow MoO1 min difficulty
+		pFactor += downLimit;
+		base  += downLimit * step;
+		return max(min, base + round(pFactor/lowStep * step));
+    }
+    
+	protected void notifyGalaxy()				{
 		Empire slayerEmp = lastAttacker();
 		for (Empire emp: galaxy().empires()) {
 			if ((emp.id != lastAttackerId) && emp.knowsOf(slayerEmp)) {
@@ -285,10 +351,9 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		}
 		return shipImage;
 	}
-	public void degradePlanet(StarSystem sys)	{}
 	public boolean isMonsterGuardian()			{ return false; } // Not Orion Guardian
 	public boolean isGuardian()					{ return false; }
-	public SpaceMonster getCopy()				{ return null; }
+	public SpaceMonster getCopy()				{ return null; } // For Amoeba
 	private void drawGuard(GalaxyMapPanel map, Graphics2D g2)	{
 		if (!displayed()) // TO DO BR: Uncomment
 			return;

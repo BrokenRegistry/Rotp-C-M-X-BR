@@ -542,8 +542,8 @@ public class AIShipCaptain implements Base, ShipCaptain {
         if(path == null)
             return 0;
         float pathSafety = 1;
-        float threatValue = 0;
-        float totalValue = 0;
+        //float threatValue = 0;
+        //float totalValue = 0;
         for (int i=0;i<path.size();i++) 
         {
             Point coord = new Point(path.mapX(i), path.mapY(i));
@@ -605,9 +605,9 @@ public class AIShipCaptain implements Base, ShipCaptain {
         int bestX = st.x;
         int bestY = st.y;
         float safestScore = 0;
-        for(int x = 0; x <= st.mgr.maxX; ++x)
+        for(int x = 0; x <= ShipCombatManager.maxX; ++x)
         {
-            for(int y = 0; y <= st.mgr.maxY; ++y)
+            for(int y = 0; y <= ShipCombatManager.maxY; ++y)
             {
                 float currentScore = 0;
                 if(!st.mgr.validSquare(x,y))

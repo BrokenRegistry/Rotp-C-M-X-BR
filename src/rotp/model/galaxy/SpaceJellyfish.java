@@ -36,24 +36,12 @@ public class SpaceJellyfish extends GuardianMonsters {
 		super(IMAGE_KEY, -2, speed, level);
 		num(0, 1); // Number of monsters
 	}
-	@Override public void initCombat()			 {
+	@Override public void initCombat()	 {
 		super.initCombat();
 		addCombatStack(new CombatStackSpaceJellyfish(this, IMAGE_KEY, stackLevel(), 0));	   
 	}
-	@Override public SpaceMonster getCopy() 	 { return new SpaceJellyfish(null, null); }
-	@Override public void initDesigns()	 {
-		designs = new ShipDesign[ShipDesignLab.MAX_DESIGNS];
-		num(0, 1);
-		num(1, 0);
-		num(2, 0);
-		num(3, 0);
-		num(4, 0);
-		num(5, 0);
-		designs[0] = design_0();
-	}
-	// @Override protected int otherSpecialCount() { return 0; } // change if needed
-
-	private ShipDesign design_0()	 {
+	@Override public SpaceMonster getCopy()		{ return new SpaceJellyfish(null, null); }
+	@Override protected ShipDesign designRotP()	{
 		ShipDesignLab lab = empire().shipLab();
 		
 		// System.out.println();

@@ -1,0 +1,5 @@
+
+[tech]
+seq:    0
+name:   EATSHIPS_0_NAME
+detail: EATSHIPS_0_DETAIL

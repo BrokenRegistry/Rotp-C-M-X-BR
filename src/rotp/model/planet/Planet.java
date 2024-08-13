@@ -235,10 +235,13 @@ public class Planet implements Base, IMappedObject, Serializable {
     public boolean isEnvironmentFertile()  { return environment == ENVIRONMENT_FERTILE; }
     public boolean isEnvironmentGaia()     { return environment == ENVIRONMENT_GAIA; }
 
-    public void irradiateEnvironment() {
+    public void irradiateEnvironment(int newSize) {
         Empire systemEmp = null;
         initPlanetType(PlanetType.RADIATED);
+        if (newSize<=0)
         baseSize(type().randomSize());
+        else
+        	baseSize(newSize);
         environment = ENVIRONMENT_HOSTILE;
         terraformLevel = 0;
 

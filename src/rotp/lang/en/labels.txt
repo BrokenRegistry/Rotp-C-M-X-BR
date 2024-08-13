@@ -3130,10 +3130,12 @@ SETTINGS_MOD_GUARDIAN_MONSTERS_RICH      | Rich
 SETTINGS_MOD_GUARDIAN_MONSTERS_RUIN_DESC | Artifact planets can be guarded by Space Monsters.
 SETTINGS_MOD_GUARDIAN_MONSTERS_RUIN      | Artifact
 SETTINGS_MOD_GUARDIAN_MONSTERS_PCT_DESC  | Base probability (in %) for good planets to have a Space Monster. This value will be multiplied by the planet size (in %).
-SETTINGS_MOD_GUARDIAN_MONSTERS_PCT       | Guardians Prob: %1%
+SETTINGS_MOD_GUARDIAN_MONSTERS_PCT        | Guardians Prob: %1%
 SETTINGS_MOD_GUARDIAN_MONSTERS_LEVEL_DESC | Difficulty level for Guardian Space Monsters.
 SETTINGS_MOD_GUARDIAN_MONSTERS_LEVEL      | Guardians Level: %1%
 
+SETTINGS_MOD_IS_MOO1_MONSTER_DESC         | To get the MoO1 Space Monster weapons and characteristics.
+SETTINGS_MOD_IS_MOO1_MONSTER              | MoO1 Monsters: %1
 
 // ========== Random Events sub Panel
 SETTINGS_MOD_RANDOM_EVENTS_TITLE         | Random Event Customization

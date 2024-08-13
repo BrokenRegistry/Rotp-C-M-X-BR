@@ -137,8 +137,8 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
     ShipFireAllButton shipFireAllButton = new ShipFireAllButton();
     ShipTeleportButton shipTeleportButton = new ShipTeleportButton();
     ShipRetreatButton shipRetreatButton = new ShipRetreatButton();
-    ShipWeaponButton[] shipWeaponButton = new ShipWeaponButton[ShipDesign.maxWeapons];
-    ShipSpecialButton[] shipSpecialButton = new ShipSpecialButton[ShipDesign.maxSpecials];
+    ShipWeaponButton[] shipWeaponButton = new ShipWeaponButton[ShipDesign.maxWeapons()];
+    ShipSpecialButton[] shipSpecialButton = new ShipSpecialButton[ShipDesign.maxSpecials()];
     Robot robot;
 
     Color[] redColors = new Color[3];
@@ -591,13 +591,21 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         if (targetStack != null) {
             if (targetStack.isColony())
                 drawColonyButtonOverlay(g, (CombatStackColony) targetStack, shipActionButtons);
-            else if (targetStack.isNeutralShip()) // modnar: add NeutralShip display
+            else if (targetStack.isNeutralShip()) { // modnar: add NeutralShip display
+            	System.out.println("drawNeutralShipButtonOverlay"); // TODO BR: REMOVE
                 drawNeutralShipButtonOverlay(g, targetStack, shipActionButtons);
+            }
 			else if (targetStack.isMonster() && !targetStack.isNeutralShip()) // modnar: separate Monster and NeutralShip
-				if (targetStack instanceof CombatStackMonster)
-					drawSpaceMonsterButtonOverlay(g, targetStack, shipActionButtons);
-				else
+				if (targetStack instanceof CombatStackMonster) {
+//	            	System.out.println("drawSpaceMonsterButtonOverlay"); // TODO BR: REMOVE
+	            	drawShipButtonOverlay(g, targetStack, shipActionButtons); // TODO BR: REMOVE
+					//drawSpaceMonsterButtonOverlay(g, targetStack, shipActionButtons);
+				}
+				else {
+//	            	System.out.println("drawMonsterButtonOverlay"); // TODO BR: REMOVE
+//	            	drawShipButtonOverlay(g, targetStack, shipActionButtons); // TODO BR: REMOVE
 					drawMonsterButtonOverlay(g, targetStack, shipActionButtons);
+				}
             else
                 drawShipButtonOverlay(g, targetStack, shipActionButtons);
         }
@@ -1469,7 +1477,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         }
     }
 	// BR: add drawMonsterShipButtonOverlay for Space Guardian Ships
-    private void drawSpaceMonsterButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
+/*    private void drawSpaceMonsterButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
         CombatStack currentStack = mgr.currentStack();
 		
 		CombatStackMonster monsterStack = (CombatStackMonster)target;
@@ -1701,7 +1709,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             g.setColor(borderColor);
             g.fillRect(x, y2+s5, w, s4);
         }
-    }
+    } */
 	
     private void paintTravelPathToImage(Graphics2D g, CombatStack stack, int hoveringX, int hoveringY) {
         if (mgr.autoComplete || mgr.performingStackTurn)
@@ -1864,6 +1872,10 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         }
         else if (st.isMonster()) {
             st.drawStack(this, g, 0, x, y, w, h, 0);
+            ShipDesign d = st.design();
+            int count = counts.containsKey(d) ? counts.get(d) : 0;
+            if (count > 0)
+                st.drawStack(this, g, count, x, y, w, h, 0);
         }
         else if (st.isColony()) {
             showPlanet = true;

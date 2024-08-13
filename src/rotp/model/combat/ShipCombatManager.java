@@ -100,6 +100,7 @@ public class ShipCombatManager implements Base {
     public boolean interdiction()              { return interdiction; }
     public ShipCombatResults results()         { return results; }
     public StarSystem system()                 { return system; }
+    public void system(StarSystem sys)         { system = sys; }
     public CombatStack currentStack()          { return currentStack; }
     public List<CombatStack> activeStacks()    { return results.activeStacks(); }
     public void ui(ShipBattleUI panel)         { ui = panel; }
@@ -193,6 +194,7 @@ public class ShipCombatManager implements Base {
         }
     }
     public void battle(StarSystem sys, SpaceMonster monster) {
+    	system = sys;
         monster.initCombat();
         empiresInConflict = sys.empiresInConflict();
         List<Empire> empires = new ArrayList<>(empiresInConflict);
@@ -890,7 +892,7 @@ public class ShipCombatManager implements Base {
             {
                 for(CombatStackMissile missile : st.missiles())
                 {
-                    //ail: the missile alsoe needs to have a target that still is there as otherwise this can lead to combat going on after target with incoming missile was destroyed
+                    //ail: the missile also needs to have a target that still is there as otherwise this can lead to combat going on after target with incoming missile was destroyed
                     if(missile.target.num > 0)
                         return true;
                 }

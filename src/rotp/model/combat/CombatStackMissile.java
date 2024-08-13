@@ -48,7 +48,7 @@ public class CombatStackMissile extends CombatStack {
         attackLevel = ship.attackLevel();
 
         int imgW = BasePanel.s60;
-        if (options().shipBasedMissiles() && empire != null) {
+        if (options().shipBasedMissiles() && empire.isEmpire()) {
         	missiles = empire.shipLab().missileImage(miss.tech(), imgW, imgW/5);
         }
         else {

@@ -35,12 +35,12 @@ public class CombatStackShip extends CombatStack {
     public final List<ShipComponent> weapons = new ArrayList<>();
     public float displacementPct = 0;
 
-    public int[] weaponCount = new int[7];
-    public int[] weaponAttacks = new int[7];
-    public int[] shotsRemaining = new int[7];
-    public int[] roundsRemaining = new int[7]; // how many rounds you can fire (i.e. missiles)
-    public int[] baseTurnsToFire = new int[7];    // how many turns to wait before you can fire again
-    public int[] wpnTurnsToFire = new int[7];    // how many turns to wait before you can fire again
+    public int[] weaponCount     = new int[7];
+    public int[] weaponAttacks   = new int[7];
+    public int[] shotsRemaining  = new int[7];
+    public int[] roundsRemaining = new int[7];	// how many rounds you can fire (i.e. missiles)
+    public int[] baseTurnsToFire = new int[7];	// how many turns to wait before you can fire again
+    public int[] wpnTurnsToFire  = new int[7];	// how many turns to wait before you can fire again
     public boolean bombardedThisTurn = false;
     private boolean usingAI = true;
     public int repulsorRange = 0;
@@ -61,7 +61,9 @@ public class CombatStackShip extends CombatStack {
         mgr = m;
         fleet = fl;
         empire = fl.empire();
-        design = empire.shipLab().design(index);
+        // design = empire.shipLab().design(index);
+        // BR: To let monsters init their design
+        initDesign(index);
         usingAI = (empire == null) || empire.isAIControlled();
         captain = empire.ai().shipCaptain();
         origNum = num = fl.num(index);
@@ -69,7 +71,14 @@ public class CombatStackShip extends CombatStack {
         streamProjectorHits(0); // BR:
         startingMaxHits(maxStackHits());
         maxMove = design.moveRange();
-        maxShield = m.system().inNebula() ? 0 : design.shieldLevel();
+        StarSystem sys = m.system();
+        if (sys == null) {
+        	sys = fl.system();
+        	if (sys == null)
+        		sys = fl.destination();
+        	m.system(sys); // As m.system() will be called again
+        }
+        maxShield = sys.inNebula() ? 0 : design.shieldLevel();
         attackLevel = design.attackLevel() + empire.shipAttackBonus();
         maneuverability = design.maneuverability();
         repulsorRange = design.repulsorRange();
@@ -84,7 +93,7 @@ public class CombatStackShip extends CombatStack {
         image = design.image();
         initShip();
     }
-
+    protected void initDesign(int id) { design = empire.shipLab().design(id) ;}
     @Override
     public boolean usingAI()          { return usingAI; }
     @Override

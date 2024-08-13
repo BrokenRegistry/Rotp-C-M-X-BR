@@ -377,7 +377,8 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
         }
         for(Entry<String, Integer> entry : aiSizes.entrySet())
         {
-            drawBorderedString(g, entry.getValue() + " " + entry.getKey(), 1, x2, y2, Color.black, aiEmpire.color());
+        	Color txtColor = aiEmpire==null? Color.RED : aiEmpire.color(); // TODO BR: MonsterColor
+            drawBorderedString(g, entry.getValue() + " " + entry.getKey(), 1, x2, y2, Color.black, txtColor);
             y2 += lineH;
         }
        

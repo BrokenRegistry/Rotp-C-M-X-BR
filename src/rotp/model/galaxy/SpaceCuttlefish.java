@@ -34,26 +34,16 @@ public class SpaceCuttlefish extends GuardianMonsters {
 		super(IMAGE_KEY, -2, speed, level);
 		num(0, 1); // Number of monsters
 	}
-	@Override public void initCombat()			{
+	@Override public void initCombat()	{
 		super.initCombat();
 		addCombatStack(new CombatStackSpaceCuttlefish(this, IMAGE_KEY, stackLevel(), 0));	   
 	}
 	@Override public SpaceMonster getCopy() 	{ return new SpaceCuttlefish(null, null); }
-	@Override public void initDesigns()	 {
-		designs = new ShipDesign[ShipDesignLab.MAX_DESIGNS];
-		num(0, 1);
-		num(1, 0);
-		num(2, 0);
-		num(3, 0);
-		num(4, 0);
-		num(5, 0);
-		designs[0] = design_0();
-	}
 	@Override public float bcValue()			{ return 100 * stackLevel(); }
 	@Override protected int otherSpecialCount() { return 2; } // change if needed
 	@Override protected float firepowerAntiMonster(float shield, float defense, 
 			float missileDefense, int speed, int beamRange) { return 100 * stackLevel(); }
-	private ShipDesign design_0()	 {
+	@Override protected ShipDesign designRotP()	 {
 		ShipDesignLab lab = empire().shipLab();
 		
 		// System.out.println();
@@ -87,18 +77,9 @@ public class SpaceCuttlefish extends GuardianMonsters {
 		design.maneuver	(maneuvers.get(stackLevel(0, maneuvers.size()-1)));
 
 		// System.out.print("weapon ");
-//		int wpnAll = max(1, stackLevel(10));
-//		for (int i=4; i>0; i--) {
-//			int count = wpnAll/i;
-//			if (count != 0) {
-//				// jellyfish darts
-//				design.weapon(i-1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
-//				// design.addWeapon(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
-//				wpnAll -= count;
-//			}
-//		}
 		design.special(0, lab.specialBattleScanner());
-		design.special(1, lab.specialNamed("Squid Ink"));
+		design.special(1, lab.specialSquidInk());
+//		design.special(1, lab.getSpecial("Squid Ink", 0));
 		
 		// design.special(1, lab.specialTeleporter());
 		// design.special(2, lab.specialCloak());

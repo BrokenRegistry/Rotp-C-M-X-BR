@@ -163,7 +163,7 @@ public class RandomEventSupernova extends AbstractRandomEvent implements ColonyR
         terminateEvent(this);
         targetSystem.clearEvent();
         targetSystem.planet().baseSize(roll(11,20)); // reset size first... irradiate will reset pop
-        targetSystem.planet().irradiateEnvironment();
+        targetSystem.planet().irradiateEnvironment(0);
         targetSystem.abandoned(false);
         targetSystem.addEvent(new SystemRandomEvent("SYSEVENT_SUPERNOVA"));
 

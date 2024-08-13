@@ -56,6 +56,14 @@ AUTOREPAIR_1_NAME      | Advanced Damage Control
 AUTOREPAIR_1_BRIEF     | Heals 30% of ship's hits a turn
 AUTOREPAIR_1_DETAIL    | Undestroyed ships can repair up to 30% of their total hit points at the end of each turn.
 
+AUTOREPAIR_2_NAME      | Amoeba Damage Control
+AUTOREPAIR_2_BRIEF     | Limit damage to max 500 Hits per turn
+AUTOREPAIR_2_DETAIL    | Never take more than 500 damage per turn.
+
+AUTOREPAIR_3_NAME      | Amoeba Mitosis
+AUTOREPAIR_3_BRIEF     | Duplicate itself after 500 damages.
+AUTOREPAIR_3_DETAIL    | Once the max damage is reached, the Amoeba split in two smaller Amoebae.
+
 
 //
 // Battle Computer techs
@@ -187,6 +195,12 @@ BLACKHOLE_0_DETAIL   | Creates a sub-space field that warps normal space, creati
 //
 SQUIDINK_0_NAME      | Squid Ink
 SQUIDINK_0_DETAIL    | Enveloping substance that destroys 10% to 30% of enemy ships.
+
+EATSHIPS_0_NAME      | Eat Ships
+EATSHIPS_0_DETAIL    | Can devour a full stack of spaceships.
+
+RESISTREPULSOR_0_NAME   | Resist Repulsors
+RESISTREPULSOR_0_DETAIL | Repulsors have no effects.
 
 
 //
@@ -439,6 +453,10 @@ PULSAR_0_DETAIL   | A potent engine modification which generates a sudden spheri
 PULSAR_1_NAME     | Ionic Pulsar
 PULSAR_1_BRIEF    | Expands to inflict 2-10 hits
 PULSAR_1_DETAIL   | A powerful engine modification capable of generating a spherical burst of phased energy striking all adjacent ships for up to 10 points of damage +1 per attacking ship.
+
+PULSAR_2_NAME     | Crystal Pulsar
+PULSAR_2_BRIEF    | Expands to inflict 1-1000 hits
+PULSAR_2_DETAIL   | A powerful engine modification capable of generating a spherical burst of phased energy striking all adjacent ships for up to 1000 points of damage +1 per attacking ship.
 
 
 //
@@ -1035,6 +1053,10 @@ SHIPNULLIFIER_0_DETAIL   | Scrambles enemy Battle Computers and ECM, reducing th
 SHIPNULLIFIER_1_NAME     | Warp Dissipator
 SHIPNULLIFIER_1_BRIEF    | Reduces speed of enemy ships
 SHIPNULLIFIER_1_DETAIL   | Warp Dissipators are long-range weapons that disrupt enemy starship engines, reducing their speed with each attack.
+
+SHIPNULLIFIER_2_NAME     | Crystal Nullifier
+SHIPNULLIFIER_2_BRIEF    | Destroys enemy computers and repair abilities 
+SHIPNULLIFIER_2_DETAIL   | Scrambles enemy Battle Computers, ECM, and Auto Repair, Each attack takes 1 computer level and 5% healing ability. 
 
 
 //

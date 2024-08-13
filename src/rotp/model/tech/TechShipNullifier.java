@@ -77,6 +77,20 @@ public final class TechShipNullifier extends Tech {
                 range = 3;
                 beamColor = new Color(0,255,0,64);
                 break;
+            case 2:
+            	// BR: Crystal Nullifier
+            	// Not the real Crystal weapon
+            	// Only to be listed in the Ship Info pop-up
+                cost = 300;
+                size = 750;
+                power = 1000;
+                hitChance = 1.0f;
+                minComputerRed = 1;
+                maxComputerRed = 1;
+                range = 1;
+                beamColor = new Color(0,170,170,64);
+                restricted = true;
+                break;
         }
     }
     @Override

@@ -100,12 +100,12 @@ public class CombatStack implements Base {
         return concat(toString()," at:", str(x), ",", str(y));
     }
     public static Comparator<CombatStack> INITIATIVE = (CombatStack o1, CombatStack o2) -> Base.compare(o2.initiativeRank(), o1.initiativeRank());
-    public CombatStack() { }
-    public CombatStack(ShipCombatManager m, Empire c) {
-        mgr = m;
-        empire = c;
-        captain = empire.ai().shipCaptain();
-    }
+//    public CombatStack() { }
+//    public CombatStack(ShipCombatManager m, Empire c) {
+//        mgr = m;
+//        empire = c;
+//        captain = empire.ai().shipCaptain();
+//    }
     public String fullName()            { return concat(str(num), ":", raceName(), " ", name()); }
     public String raceName()            { return empire != null ? empire.raceName() : name(); }
     public String name()                { return "object"; }
@@ -191,7 +191,9 @@ public class CombatStack implements Base {
     public boolean canPotentiallyAttack(CombatStack target)   { return false; }
     public boolean canDamage(CombatStack target)              { return maxDamage() > target.shieldLevel(); }
     public float estimatedKills(CombatStack target, boolean ignoreMissiles)           { return 0; }
-    public float estimatedKillPct(CombatStack target, boolean ignoreMissiles)         { return target.num == 0 ? 0 : estimatedKills(target, ignoreMissiles) / target.num; }
+    public float estimatedKillPct(CombatStack target, boolean ignoreMissiles)         {
+    	return target.num == 0 ? 0 : estimatedKills(target, ignoreMissiles) / target.num;
+    	}
     public void rotateToUsableWeapon(CombatStack target)      {  }
     public void fireWeapon(CombatStack target, int i, boolean shots) { }
     public void fireWeapon(CombatStack target, int i) { fireWeapon(target,i,false); }
