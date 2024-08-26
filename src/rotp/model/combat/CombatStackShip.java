@@ -19,6 +19,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import rotp.model.ai.interfaces.ShipCaptain;
 import rotp.model.empires.ShipView;
 import rotp.model.galaxy.ShipFleet;
 import rotp.model.galaxy.StarSystem;
@@ -29,23 +31,32 @@ import rotp.ui.BasePanel;
 import rotp.ui.combat.ShipBattleUI;
 
 public class CombatStackShip extends CombatStack {
-    public ShipDesign design;
-    public ShipFleet fleet;
-    public int selectedWeaponIndex;
-    public final List<ShipComponent> weapons = new ArrayList<>();
-    public float displacementPct = 0;
+	// BR: made the class parameters private.
+	private static final int maxComponents = 9; // BR: to accommodate Monsters 
+	private ShipDesign design;
+	private ShipFleet fleet;
+	private int selectedWeaponIndex;
+	private final List<ShipComponent> weapons = new ArrayList<>();
+	private float displacementPct = 0;
 
-    public int[] weaponCount     = new int[7];
-    public int[] weaponAttacks   = new int[7];
-    public int[] shotsRemaining  = new int[7];
-    public int[] roundsRemaining = new int[7];	// how many rounds you can fire (i.e. missiles)
-    public int[] baseTurnsToFire = new int[7];	// how many turns to wait before you can fire again
-    public int[] wpnTurnsToFire  = new int[7];	// how many turns to wait before you can fire again
-    public boolean bombardedThisTurn = false;
-    private boolean usingAI = true;
-    public int repulsorRange = 0;
-    private CombatStack ward;
-    
+	private int[] weaponCount     = new int[maxComponents];
+	private int[] weaponAttacks   = new int[maxComponents];
+	private int[] shotsRemaining  = new int[maxComponents];
+	private int[] roundsRemaining = new int[maxComponents];	// how many rounds you can fire (i.e. missiles)
+	private int[] baseTurnsToFire = new int[maxComponents];	// how many turns to wait before you can fire again
+	private int[] wpnTurnsToFire  = new int[maxComponents];	// how many turns to wait before you can fire again
+	private boolean bombardedThisTurn = false;
+	private boolean usingAI = true;
+	private int repulsorRange = 0;
+	private CombatStack ward;
+
+	@Override public int shotsRemaining(int idx)	{ return shotsRemaining[idx]; }
+	public void shotsRemaining(int idx, int val)	{ shotsRemaining[idx] = val; }
+	public int weaponAttacks(int idx)	{ return weaponAttacks[idx]; }
+	public int roundsRemaining(int idx)	{ return roundsRemaining[idx]; }
+	public int wpnTurnsToFire(int idx)	{ return wpnTurnsToFire[idx]; }
+	public ShipFleet fleet()			{ return fleet; }
+
     @Override
     public String toString() {
         if (target != null)
@@ -60,12 +71,12 @@ public class CombatStackShip extends CombatStack {
     public CombatStackShip(ShipFleet fl, int index, ShipCombatManager m) {
         mgr = m;
         fleet = fl;
-        empire = fl.empire();
-        // design = empire.shipLab().design(index);
+        empire(fl.empire());
+        // design = empire().shipLab().design(index);
         // BR: To let monsters init their design
-        initDesign(index);
-        usingAI = (empire == null) || empire.isAIControlled();
-        captain = empire.ai().shipCaptain();
+        design  = getDesign(index);
+        usingAI = (empire() == null) || empire().isAIControlled();
+        captain = getCaptain();
         origNum = num = fl.num(index);
         maxStackHits(design.hits());
         streamProjectorHits(0); // BR:
@@ -76,24 +87,30 @@ public class CombatStackShip extends CombatStack {
         	sys = fl.system();
         	if (sys == null)
         		sys = fl.destination();
+        	if (sys == null)
+        		// BR: Monster backward compatibility.
+        		// May be inaccurate for SpaceCuttlefish and SpaceJellyfish 
+        		// But may only lead to only wrong shield estimation!
+        		sys = m.galaxy().orionSystem();
         	m.system(sys); // As m.system() will be called again
         }
         maxShield = sys.inNebula() ? 0 : design.shieldLevel();
-        attackLevel = design.attackLevel() + empire.shipAttackBonus();
+        attackLevel = design.attackLevel() + empire().shipAttackBonus();
         maneuverability = design.maneuverability();
         repulsorRange = design.repulsorRange();
         hits(maxStackHits());
         move = maxMove;
         shield = maxShield;
-        missileDefense = design.missileDefense() + empire.shipDefenseBonus();
-        beamDefense = design.beamDefense() + empire.shipDefenseBonus();
+        missileDefense = design.missileDefense() + empire().shipDefenseBonus();
+        beamDefense = design.beamDefense() + empire().shipDefenseBonus();
         displacementPct = design.missPct();
         repairPct = designShipRepairPct();
         beamRangeBonus = designBeamRangeBonus();
         image = design.image();
         initShip();
     }
-    protected void initDesign(int id) { design = empire.shipLab().design(id) ;}
+    protected ShipDesign getDesign(int id) { return empire().shipLab().design(id); }
+    protected ShipCaptain getCaptain()     { return empire().ai().shipCaptain(); }
     @Override
     public boolean usingAI()          { return usingAI; }
     @Override
@@ -103,7 +120,7 @@ public class CombatStackShip extends CombatStack {
     @Override
     public ShipDesign design()       { return design; }
     @Override
-    public boolean hostileTo(CombatStack st, StarSystem sys)       { return st.isMonster() || empire.aggressiveWith(st.empire, sys); }
+    public boolean hostileTo(CombatStack st, StarSystem sys)       { return st.isMonster() || empire().aggressiveWith(st.empire(), sys); }
     @Override
     public CombatStack ward()             { return ward; }
     @Override
@@ -126,7 +143,7 @@ public class CombatStackShip extends CombatStack {
     public boolean canRetreat()     {
         boolean checkRetreatTurn = false;
         int retreatRestrictions = options().selectedRetreatRestrictions();
-        if(empire.isAIControlled()) {
+        if(empire().isAIControlled()) {
             if(retreatRestrictions == 1 || retreatRestrictions == 3)
                 checkRetreatTurn = true;
         } else {
@@ -143,18 +160,19 @@ public class CombatStackShip extends CombatStack {
     public ShipComponent selectedWeapon() { return weapons.get(selectedWeaponIndex); }
     @Override
     public boolean canDamage(CombatStack target) { return estimatedKills(target, false) > 0; }
+    @Override public boolean immuneToStasis()	 { return design.immuneToStasis(); }
     @Override
     public float bombDamageMod()   { return 0; }
     @Override
     public float blackHoleDef()    { return design.blackHoleDef(); }
     @Override
-    public void recordKills(int num) { empire.shipLab().recordKills(design, num); }
+    public void recordKills(int num) { empire().shipLab().recordKills(design, num); }
     @Override
-    public boolean ignoreRepulsors()    { return cloaked || canTeleport(); }
+    public boolean ignoreRepulsors() { return cloaked || canTeleport() || design.ignoreRepulsors(); }
     @Override
     public void becomeDestroyed()    {
         fleet.removeShips(design.id(), num, true);
-        empire.shipLab().recordDestruction(design, num);
+        empire().shipLab().recordDestruction(design, num);
         mgr.currentStack().recordKills(num);
 
         super.becomeDestroyed();
@@ -164,7 +182,7 @@ public class CombatStackShip extends CombatStack {
     @Override
     public boolean canFireWeapon() {
         for (CombatStack st: mgr.activeStacks()) {
-            if ((empire != st.empire) && canAttack(st))
+            if ((empire() != st.empire()) && canAttack(st))
                 return true;
         }
         return false;
@@ -241,7 +259,7 @@ public class CombatStackShip extends CombatStack {
             }
             else if(!wpn.groundAttacksOnly())
             {
-                if(empire.ai().shipCaptain().useSmartRangeForBeams())
+                if(empire().ai().shipCaptain().useSmartRangeForBeams())
                 {
                     int targetRange = tgt.maxFiringRange(this);
                     if((initiativeRank() < tgt.initiativeRank() || this.maxMove() > tgt.maxMove()) && targetRange < weaponRange(wpn))
@@ -263,19 +281,19 @@ public class CombatStackShip extends CombatStack {
     }
     public float designShipRepairPct() {
         float healPct = 0;
-        for (int i=0;i<ShipDesign.maxSpecials();i++)
+        for (int i=0;i<design.maxSpecials();i++)
             healPct = max(healPct, design.special(i).shipRepairPct());
         return healPct;
     }
     private int designBeamRangeBonus() {
         int rng = 0;   
-        for (int j=0;j<ShipDesign.maxSpecials();j++)
+        for (int j=0;j<design.maxSpecials();j++)
             rng += design.special(j).beamRangeBonus();
         return rng;
     }
-    public void initShip() {
-        int cols = empire.numColonies();
-        atLastColony = ((empire == mgr.system().empire()) && (cols == 1));
+    private void initShip() {
+        int cols = empire().numColonies();
+        atLastColony = ((empire() == mgr.system().empire()) && (cols == 1));
         canCloak = design.allowsCloaking();
         cloak();
 
@@ -289,7 +307,7 @@ public class CombatStackShip extends CombatStack {
                 weapons.add(design.weapon(i));
             }
         }
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<design.maxSpecials();i++) {
             if (design.special(i).isWeapon()) {
                 weaponCount[weapons.size()] = 1;
                 weaponAttacks[weapons.size()] = 1;
@@ -307,19 +325,19 @@ public class CombatStackShip extends CombatStack {
     }
     @Override
     public int wpnCount(int i) { return design.wpnCount(i); }
-    @Override
-    public int shotsRemaining(int i) { return shotsRemaining[i]; }
-    @Override
-    public void reloadWeapons() {
-        super.reloadWeapons();
-        System.arraycopy(weaponAttacks, 0, shotsRemaining, 0, shotsRemaining.length);
-        
-        for (ShipComponent c: weapons)
-            c.reload();
-        //ail: reset selectedWeaponIndex too, so that ship will consistently start from the same weapon each new turn
-        if (weapons.size() > 0)
-            selectedWeaponIndex = 0;
-    }
+
+	public void reloadComponents()	{
+		for (ShipComponent c: weapons)
+			c.reload();
+	}
+	@Override public void reloadWeapons()	{
+		super.reloadWeapons();
+		System.arraycopy(weaponAttacks, 0, shotsRemaining, 0, shotsRemaining.length);
+		reloadComponents();
+		//ail: reset selectedWeaponIndex too, so that ship will consistently start from the same weapon each new turn
+		if (weapons.size() > 0)
+			selectedWeaponIndex = 0;
+	}
     @Override
     public void endTurn() {
         super.endTurn();
@@ -360,7 +378,7 @@ public class CombatStackShip extends CombatStack {
     }
     @Override
     public float initiative() {
-        return design.initiative() + empire.shipInitiativeBonus();
+        return design.initiative() + empire().shipInitiativeBonus();
     }
     @Override
     public boolean selectBestWeapon(CombatStack target) {
@@ -460,7 +478,7 @@ public class CombatStackShip extends CombatStack {
     public boolean canPotentiallyAttack(CombatStack st) {
         if (st == null)
             return false;
-        if (empire.alliedWith(id(st.empire)))
+        if (empire().alliedWith(id(st.empire())))
             return false;
         for (int i=0;i<weapons.size();i++) {
             if (shipComponentCanPotentiallyAttack(st, i))
@@ -475,7 +493,7 @@ public class CombatStackShip extends CombatStack {
                 // armed if: weapons are not bombs or if not allied with planet (& can bomb it)
                 if (!weapons.get(i).groundAttacksOnly())
                     return true;
-                if (mgr.system().isColonized() && !empire.alliedWith(mgr.system().empire().id))
+                if (mgr.system().isColonized() && !empire().alliedWith(mgr.system().empire().id))
                     return true;
             }
         }
@@ -606,7 +624,7 @@ public class CombatStackShip extends CombatStack {
         ShipComponent shipWeapon = weapons.get(index);
         if (target == null)
             return false;
-        if (empire == target.empire)
+        if (empire() == target.empire())
             return false;
         if (shipWeapon.groundAttacksOnly() && !target.isColony())
             return false;
@@ -639,7 +657,7 @@ public class CombatStackShip extends CombatStack {
         if (!destroyed())  // if destroyed, already recorded lose in super.loseShip()
             mgr.results().addShipDestroyed(design, shipsLost);
         
-        empire.shipLab().recordDestruction(design, shipsLost);
+        empire().shipLab().recordDestruction(design, shipsLost);
         mgr.currentStack().recordKills(shipsLost);
     }
     @Override
@@ -828,7 +846,7 @@ public class CombatStackShip extends CombatStack {
             }
         }
     }
-    public void drawRetreat() {
+    void drawRetreat() {
         if (!mgr.showAnimations())
             return;
 

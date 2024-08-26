@@ -50,7 +50,7 @@ public class ShipFighterTemplate implements Base {
     }
     public static float estimatedDamage(ShipDesign d, EnemyShipTarget target) {
         List<ShipSpecial> rangeSpecials = new ArrayList<>();
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             ShipSpecial sp = d.special(i);
             if (sp.allowsCloaking()
             || (sp.allowsTeleporting() && !target.hasInterdictors)
@@ -169,14 +169,14 @@ public class ShipFighterTemplate implements Base {
                 return;
         }
     }
-    private void setBestECMJammer(ShipDesigner ai, ShipDesign d) {
+    /* private void setBestECMJammer(ShipDesigner ai, ShipDesign d) {
         List<ShipECM> comps = ai.lab().ecms();
         for (int i=comps.size()-1; i >=0; i--) {
             d.ecm(comps.get(i));
             if (d.availableSpace() >= 0)
                 return;
         }
-    }
+    } */
  // add 2nd best ECM option
     private void set2ndBestECMJammer(ShipDesigner ai, ShipDesign d) {
         List<ShipECM> comps = ai.lab().ecms();

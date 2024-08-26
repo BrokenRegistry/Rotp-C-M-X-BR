@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rotp.model.galaxy;
+package rotp.model.ships;
 
-public abstract class GuardianMonsters extends SpaceMonster {
+import rotp.model.tech.TechResistSpecial;
+
+public final class ShipSpecialResistSpecial extends ShipSpecial {
 	private static final long serialVersionUID = 1L;
-	
-	public GuardianMonsters(String name, int empId, Float speed, Float level) {
-		super(name, empId, speed, level);
+	public ShipSpecialResistSpecial(TechResistSpecial t) {
+		tech(t);
+		sequence(t.level + .05f);
 	}
-
-	@Override public void	 plunder()			{ removeGuardian(); }
-	@Override public boolean isFusionGuardian()	{ return true; }
-	@Override public boolean isOrionGuardian()	{ return true; }
-	@Override public StarSystem system()		{ return galaxy().system(sysId()); }
-}
+	@Override public TechResistSpecial tech()	{ return (TechResistSpecial) super.tech(); }
+	@Override public boolean isWeapon()			{ return false; }
+	@Override public int	 range()			{ return tech().range; }
+	@Override public boolean isImmuneToStasis()	{ return tech().immuneToStasis; }
+	@Override public boolean resistRepulsors()	{ return tech().resistRepulsors; }
+ }

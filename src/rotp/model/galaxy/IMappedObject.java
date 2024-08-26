@@ -55,8 +55,9 @@ public interface IMappedObject {
     }
     default public float travelTimeAdjusted(IMappedObject fr, IMappedObject to, float speed) {
         float dist = fr.distanceTo(to);
-        if (speed<=1) // for Monsters
-        	return dist/speed-0.01f;
+        if (fr instanceof SpaceMonster)
+        	return ((SpaceMonster) fr).event.targetTurnCount();
+
         int numSegments = (int) Math.ceil(dist);
         float dX = (to.x()-fr.x())/dist;
         float dY = (to.y()-fr.y())/dist;

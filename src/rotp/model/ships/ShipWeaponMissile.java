@@ -23,7 +23,7 @@ import rotp.model.tech.TechMissileWeapon;
 
 public final class ShipWeaponMissile extends ShipWeaponMissileType {
     private static final long serialVersionUID = 1L;
-    private boolean multi = false;
+    private boolean multi = false; // 2 shots(false) vs 5 shots(true)
     private final int range;
     private final int shots;
     private final float speed;

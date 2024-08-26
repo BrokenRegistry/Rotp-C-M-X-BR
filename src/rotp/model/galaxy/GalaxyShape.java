@@ -575,19 +575,19 @@ public abstract class GalaxyShape implements Base, Serializable {
 	}
 	private boolean generateValid(boolean full) {
 		if (generate(full)) {
-			//System.out.println("generateValid(" + full + ") " + genAttempt + " tentatives");
+			//System.out.println("generateValid(" + full + ") " + genAttempt + " attempts");
 			return true;
 		}
 		// Some issues... Switch to an easy shape
-		System.err.println("Failed generateValid(" + full + ") " + genAttempt + " tentatives");
+		System.err.println("Failed generateValid(" + full + ") " + genAttempt + " attempts");
 		clean();
 		opts.shapeSelection().setFromDefault(false, false);
 		if (generate(full)) {
-			System.out.println("default generateValid(" + full + ") " + genAttempt + " tentatives");
+			System.out.println("default generateValid(" + full + ") " + genAttempt + " attempts");
 			return true;
 		}
 		// more issues...
-		System.err.println("Failed default generateValid(" + full + ") " + genAttempt + " entatives");
+		System.err.println("Failed default generateValid(" + full + ") " + genAttempt + " attempts");
 		clean();
 		return false;
 	}

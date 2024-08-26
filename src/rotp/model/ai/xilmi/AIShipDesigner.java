@@ -322,7 +322,7 @@ public class AIShipDesigner implements Base, ShipDesigner {
                 if(currDesign.weapon(i).maxDamage() - antiDote <= 0)
                     bioWeaponObsolete = true;
         
-        for (int i=0;i<maxSpecials();i++) {
+        for (int i=0;i<maxSpecials;i++) {
             if(currDesign.special(i).allowsCloaking() == true)
                 oldHasCloaking = true; 
             if(newDesign.special(i).allowsCloaking() == true)
@@ -415,7 +415,7 @@ public class AIShipDesigner implements Base, ShipDesigner {
             return;
         }
         
-        for (int j=0;j<maxSpecials();j++)
+        for (int j=0;j<maxSpecials;j++)
             if(currDesign.special(j).beamRangeBonus() > 0)
                 needRange = false;
         for(int j=0;j<maxWeapons();j++)
@@ -445,7 +445,7 @@ public class AIShipDesigner implements Base, ShipDesigner {
             if(newDesign.shieldLevel() > currDesign.shieldLevel())
                 betterShield = true;
         
-        for (int i=0;i<maxSpecials();i++) {
+        for (int i=0;i<maxSpecials;i++) {
             if(currDesign.special(i).allowsCloaking() == true)
                 oldHasCloaking = true; 
             if(newDesign.special(i).allowsCloaking() == true)

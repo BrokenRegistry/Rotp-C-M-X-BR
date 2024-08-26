@@ -3,15 +3,10 @@ Info for Mac Users: Applications/games/rotp/ is a good place to run it smoothly!
 
 <b><ins>Very last changes:</ins></b>
 
-- New button to declare war before ship combat.
-  - Replaced ship combat War war button by Empire Flags.
-  - Ship Combat Pop-Up: display incoming monster icon.
-  - Ship Combat Pop-Up: more info.
-  - Ship Combat Pop-Up: press "H" to get more fleet Info
-- Galaxy Map, fleet relocation: press "Alt" to get info on the hovered star or ship.
-- Merged Xilmi AI improvement:
-  - Instead of a static 100% score-bonus for being able to kill at least one ship in an enemy-stack, the score is now divided by the hitpoints of the first ship of the stack if not at least one ship can be killed. This shall help prevent the AI from shooting at big tanky ships that will just retreat once their health drops too far instead of attempting to secure kills on smaller ships.
-- Fixed missing beam Animations.
+- After first council, the last vote will be shown in the Empire-Diplomacy panel.
+- When hovered over, Space Monsters are displayed on the right panel.
+  - Pressing "H" will then display their specs.
+- Space Monsters can be replaced by their MoO1 equivalent.
 
 
 <b><ins>Updates since last Reddit announcement:</ins></b>
@@ -35,6 +30,7 @@ Info for Mac Users: Applications/games/rotp/ is a good place to run it smoothly!
     - The player to vote first or Last.
     - Realms Beyond: No second chances, no half win... ==> No Alliance victory (Neither Council nor Military) & No rebellion! (Including player)
     - No Alliances: No half win... ==> No Alliance victory (Neither Council nor Military)
+    - After first council, the last vote will be shown in the Empire-Diplomacy panel.
 - Custom Species Panel:
   - New Limited Ignores Eco, a new custom race option: (by Practical-Incarnation)
   - Display malus value in Species customization panel.
@@ -48,6 +44,7 @@ Info for Mac Users: Applications/games/rotp/ is a good place to run it smoothly!
     - New option to prevent asteroids from disapearing.
     - New option to place Ships and planet in their MoO1 location.
     - New option for asteroids to impact on weapons. (As in MoO1)
+  - Space Monsters can be replaced by their MoO1 equivalent.
 - Governor Options:
   - Replaced the Governor "Spare Xenophobes" with a more general option: "Respect promises"
   - The last promise will be shown in the Empire Intelligence panel during the entire sensitive time.

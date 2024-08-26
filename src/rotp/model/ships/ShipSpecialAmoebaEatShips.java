@@ -42,7 +42,7 @@ public final class ShipSpecialAmoebaEatShips extends ShipSpecial {
 		else if (st.isColony()) {
 			CombatStackColony cStack = (CombatStackColony) st;
 			st.mgr.destroyStack(st);
-			ShipFleet monster = ((CombatStackShip) source).fleet;
+			ShipFleet monster = ((CombatStackShip) source).fleet();
 			monster.degradePlanet(st.mgr.system());
 			cStack.colonyDestroyed = true;
 		}

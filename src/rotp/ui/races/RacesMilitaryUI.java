@@ -132,7 +132,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         }
         return shipIconBackImg;
     }
-    public void paintPlayerData(Graphics2D g, int x, int y) {
+    public  void paintPlayerData(Graphics2D g, int x, int y, Color bg) {
         Empire emp = player();
         int sBrd = scaled(130);
         int sIco = scaled(120);
@@ -142,15 +142,15 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int defW  = scaled(255);
         int headY = y+sBrd+s5;
         int headW = scaled(927);
-        drawRaceIconBase(g, emp, x, y, sBrd, sBrd);
+        drawRaceIconBase(g, emp, x, y, sBrd, sBrd, bg);
         drawRaceIcon(g, emp, x+s5, y+s5, sIco, sIco);
-        drawPlayerBaseInfo(g, emp, infoX, y, baseW, sBrd);
-        drawPlayerDefenseInfo(g, emp, defX, y+s30, defW, scaled(140), 1);
-        g.setColor(RacesUI.darkBrown);
+        drawPlayerBaseInfo(g, emp, infoX, y, baseW, sBrd, bg);
+        drawPlayerDefenseInfo(g, emp, defX, y+s30, defW, scaled(140), 1, bg);
+       	g.setColor(bg);
         g.fillRect(x, headY, headW, s20);
         drawShipDesignTitle(g, emp, x, headY, headW, s20);
     }
-    public void paintAlienData(Graphics2D g, Empire emp, int x, int y) {
+    public  void paintAlienData(Graphics2D g, Empire emp, int x, int y, Color bg) {
         int sBrd = scaled(130);
         int sIco = scaled(120);
         int infoX = x +scaled(135);
@@ -160,11 +160,20 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int headY = y+sBrd+s5;
         int headW = scaled(927);
 
-        drawRaceIconBase(g, emp, x, y, sBrd, sBrd);
+        drawRaceIconBase(g, emp, x, y, sBrd, sBrd, bg);
         drawRaceIcon(g, emp, x+s5, y+s5, sIco, sIco);
-        drawAIBaseInfo(g, emp, infoX, y, baseW, sBrd);
-        drawAIDefenseInfo(g, emp, defX, y+s30, defW, scaled(140));
-        g.setColor(RacesUI.darkBrown);
+        drawAIBaseInfo(g, emp, infoX, y, baseW, sBrd, bg);
+        drawAIDefenseInfo(g, emp, defX, y+s30, defW, scaled(140), bg);
+       	//g.setColor(MainUI.paneBackground);
+       	g.setColor(bg);
+        g.fillRect(x, headY, headW, s20);
+        drawShipDesignTitle(g, emp, x, headY, headW, s20);
+    }
+    public  void paintMonsterData(Graphics2D g, Empire emp, int x, int y, Color bg) {
+        int sBrd = scaled(130);
+        int headY = y+sBrd+s5;
+        int headW = scaled(927);
+        g.setColor(bg);
         g.fillRect(x, headY, headW, s20);
         drawShipDesignTitle(g, emp, x, headY, headW, s20);
     }
@@ -181,11 +190,11 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int baseW = scaled(290);
         int defX = w-scaled(275);
         int defW = scaled(255);
-        drawRaceIconBase(g, emp, s55, s25, s210, s210);
-        drawPlayerBaseInfo(g, emp, s260, s80, baseW, scaled(130));
-        drawPlayerDefenseInfo(g, emp, defX, s80, defW, scaled(140), 0);
+        drawRaceIconBase(g, emp, s55, s25, s210, s210, RacesUI.darkBrown);
+        drawPlayerBaseInfo(g, emp, s260, s80, baseW, scaled(130), RacesUI.darkBrown);
+        drawPlayerDefenseInfo(g, emp, defX, s80, defW, scaled(140), 0, RacesUI.darkBrown);
         drawShipDesignTitle(g, emp, s20, s220, w-s20-s20, s40);
-        drawShipDesignListing(g, emp, s20, s265, w-s20-s20, h-s265-s10);
+        drawShipDesignListing(g, emp, s20, s265, w-s20-s20, h-s265-s10, RacesUI.darkBrown);
         if (UserPreferences.texturesInterface()) 
             drawTexture(g,0,0,w,h);
         drawRaceIcon(g, emp, s60, s30, s200, s200);
@@ -205,19 +214,19 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int baseW = scaled(290);
         int defX = w-scaled(275);
         int defW = scaled(255);
-        drawRaceIconBase(g, emp, s55, s25, s210, s210);
-        drawAIBaseInfo(g, emp, s260, s80, baseW, scaled(130));
-        drawAIDefenseInfo(g, emp, defX, s80, defW, scaled(140));
+        drawRaceIconBase(g, emp, s55, s25, s210, s210, RacesUI.darkBrown);
+        drawAIBaseInfo(g, emp, s260, s80, baseW, scaled(130), RacesUI.darkBrown);
+        drawAIDefenseInfo(g, emp, defX, s80, defW, scaled(140), RacesUI.darkBrown);
         drawShipDesignTitle(g, emp, s20, s220, w-s20-s20, s40);
-        drawShipDesignListing(g, emp, s20, s265, w-s20-s20, h-s265-s10);
+        drawShipDesignListing(g, emp, s20, s265, w-s20-s20, h-s265-s10, RacesUI.darkBrown);
         if (UserPreferences.texturesInterface()) 
             drawTexture(g,0,0,w,h);
         drawRaceIcon(g, emp, s60, s30, s200, s200);
         drawFleetTitle(g, emp, s260, s30, baseW, s50);
         drawDefenseTitle(g, emp, defX, s30, defW, s50);
     }
-    private void drawRaceIconBase(Graphics2D g, Empire emp, int x, int y, int w, int h) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawRaceIconBase(Graphics2D g, Empire emp, int x, int y, int w, int h, Color bg) {
+        g.setColor(bg);
         Shape rect = new RoundRectangle2D.Float(x,y,w,h,w/8, h/8);
         g.fill(rect);  
     }
@@ -251,8 +260,8 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         g.setFont(narrowFont(32));
         drawString(g,text("RACES_MILITARY_DEFENSE"), x+s10, y+h-s15);
     }
-    private void drawPlayerBaseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawPlayerBaseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h, Color bg) {
+        g.setColor(bg);
         g.fillRect(x, y, w, h);
         int x0 = x+s20;
         int y0 = y + s26;
@@ -274,8 +283,8 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         drawSizeBox(g, text("RACES_MILITARY_MEDIUM"), pl.shipCount(ShipDesign.MEDIUM), x1, y1, boxW, s25, false);
         drawSizeBox(g, text("RACES_MILITARY_HUGE"),   pl.shipCount(ShipDesign.HUGE),   x2, y1, boxW, s25, false); 
     }
-    private void drawAIBaseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawAIBaseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h, Color bg) {
+        g.setColor(bg);
         g.fillRect(x, y, w, h);
         int x0 = x+s20;
         int y0 = y + s26;
@@ -311,8 +320,8 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         else
             drawString(g,text("RACES_MILITARY_REPORT_OLD", str(age)), x0, y2);
     }
-    private void drawPlayerDefenseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h, int stop) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawPlayerDefenseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h, int stop, Color bg) {
+        g.setColor(bg);
         g.fillRect(x, y, w, h-s40);
         int y0 = y + s20;
 
@@ -364,7 +373,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         
         if (stop==1)
         	return;
-        g.setColor(RacesUI.darkBrown);
+        g.setColor(bg);
         g.fillRect(x, y+h-s35, w, s35);
         
         y0 += s32;        
@@ -413,8 +422,8 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
             g.setStroke(prev);
         }       
     }
-    private void drawAIDefenseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawAIDefenseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h, Color bg) {
+        g.setColor(bg);
         g.fillRect(x, y, w, h-s40);
         int y0 = y + s20;
 
@@ -479,8 +488,8 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         drawString(g,text("RACES_MILITARY_WEAPONS"), x3, y0);
         drawString(g,text("RACES_MILITARY_SPECIALS"), x4, y0);
     }
-    private void drawShipDesignListing(Graphics2D g, Empire emp, int x, int y, int w, int h) {
-        g.setColor(RacesUI.darkBrown);
+    private void drawShipDesignListing(Graphics2D g, Empire emp, int x, int y, int w, int h, Color bg) {
+        g.setColor(bg);
         g.fillRect(x, y, w, h);
         
         for (Rectangle r: renameBoxes.values())
@@ -542,7 +551,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int x0 = x+((w-sw)/2);
         drawShadowedString(g, str, 2, x0, y+(h/4)-s15, Color.black, SystemPanel.whiteText);
     }
-    public void  drawShipDesign(Graphics2D g, ShipView view, int num, int x, int y, int w, int h) {
+    public  void drawShipDesign(Graphics2D g, ShipView view, int num, int x, int y, int w, int h, Color bg) {
         int x0 = x;
         int x1 = x+scaled(245);
         int x2 = x+scaled(395);
@@ -550,7 +559,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int x4 = x+scaled(735);
         int x5 = x+w-scaled(20);
 
-        g.setColor(RacesUI.darkBrown);
+     	g.setColor(bg);
         g.fillRect(x, y, w-s20, h);
         drawShipNameAndIcon(g, view, x0, y, x1-x0, h, num);
         drawShipTactical1(g, view, x1, y, x2-x1, h);
@@ -569,7 +578,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         g.drawLine(x5, y, x5, y+h);
         g.setStroke(prev);       
     }
-    private void  drawShipNameAndIcon(Graphics2D g, ShipView view, int x, int y, int w, int h, int num) {     
+    private void drawShipNameAndIcon(Graphics2D g, ShipView view, int x, int y, int w, int h, int num) {     
         int x0 = x+w*11/20;
         int w0 = x+w-x0-s5;
         int y0 = y+s5;
@@ -592,7 +601,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
 
         drawShipIcon(g, view, x0, y0, w0, h0); 
     }
-    private void  drawShipDesign(Graphics2D g, Empire emp, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipDesign(Graphics2D g, Empire emp, ShipView view, int x, int y, int w, int h) { 
         int x0 = x;
         int x1 = x+scaled(245);
         int x2 = x+scaled(395);
@@ -617,7 +626,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         g.drawLine(x5, y, x5, y+h);
         g.setStroke(prev);       
     }
-    private void  drawShipNameAndIcon(Graphics2D g, ShipView view, int x, int y, int w, int h) {     
+    private void drawShipNameAndIcon(Graphics2D g, ShipView view, int x, int y, int w, int h) {     
         int x0 = x+w*11/20;
         int w0 = x+w-x0-s5;
         int y0 = y+s5;
@@ -674,7 +683,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         }
         drawShipIcon(g, view, x0, y0, w0, h0); 
     }
-    private void  drawShipIcon(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipIcon(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
         g.setColor(Color.black);
         RoundRectangle2D roundRect = new RoundRectangle2D.Float(x,y,w,h,s20,s20);
         g.fill(roundRect);
@@ -698,7 +707,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int y1 = y+((h-h1)/2);
         g.drawImage(img, x1, y1, x1+w1, y1+h1, 0, 0, w0, h0, this);
     }
-    private void  drawShipTactical1(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipTactical1(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
         String unk = text("RACES_MILITARY_UNSCANNED");
 
         ShipDesign d = view.design();
@@ -734,7 +743,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         sw = g.getFontMetrics().stringWidth(val);
         drawString(g,val, x+w-sw-s10, y3);
     }
-    private void  drawShipTactical2(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipTactical2(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
         String unk = text("RACES_MILITARY_UNSCANNED");
  
         ShipDesign d = view.design();
@@ -771,7 +780,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         drawString(g,val, x+w-sw-s10, y3);
 
     }
-    private void  drawShipWeapons(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipWeapons(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
         ShipDesign d = view.design();
         g.setFont(narrowFont(15));
 
@@ -801,7 +810,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
             }    
         }
     }
-    private void  drawShipSpecials(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
+    private void drawShipSpecials(Graphics2D g, ShipView view, int x, int y, int w, int h) { 
         ShipDesign d = view.design();
         g.setFont(narrowFont(15));
 
@@ -809,7 +818,7 @@ public final class RacesMilitaryUI extends BasePanel implements MouseListener, M
         int y0 = y;
         int x0 = x+s10;
         g.setColor(SystemPanel.blackText);
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             y0 += lineH;
             if (view.specialKnown(i)) {
                 if (view.hasSpecial(i)) {

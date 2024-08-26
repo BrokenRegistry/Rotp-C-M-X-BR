@@ -1,5 +1,6 @@
 package rotp.model.game;
 
+import static rotp.model.game.IPreGameOptions.guardianMonstersLevel;
 
 import java.util.Arrays;
 
@@ -44,23 +45,34 @@ public interface IRandomEvents extends IBaseOptsTools {
 		.put("Yes",	MOD_UI + "MONSTERS_GIVE_LOOTS_YES");
 	default boolean monstersGiveLoot()			{ return monstersGiveLoots.get().equalsIgnoreCase("Yes"); }
 
+	String MONSTER_EASY		= "Easy";
+	String MONSTER_NORMAL	= "Normal";
+	String MONSTER_HARD		= "Hard";
+	String MONSTER_CUSTOM	= "Custom";
 	ParamList    monstersLevel	= new ParamList( MOD_UI, "MONSTERS_LEVEL", "Normal")
 		.setDefaultValue(MOO1_DEFAULT, "MoO1")
 		.showFullGuide(true)
-		.put("Normal", 	MOD_UI + "MONSTERS_LEVEL_NORMAL")
-		.put("Easy",	MOD_UI + "MONSTERS_LEVEL_EASY")
-		.put("MoO1",	MOD_UI + "MONSTERS_LEVEL_MOO1");
+		.put(MONSTER_EASY,		MOD_UI + "MONSTERS_LEVEL_EASY")
+		.put(MONSTER_NORMAL, 	MOD_UI + "MONSTERS_LEVEL_NORMAL")
+		.put(MONSTER_HARD,		MOD_UI + "MONSTERS_LEVEL_HARD")
+		.put(MONSTER_CUSTOM,	MOD_UI + "MONSTERS_LEVEL_CUSTOM");
+	
+		//.put("MoO1",	MOD_UI + "MONSTERS_LEVEL_MOO1");
 	default String	monstersLevelKey()			{ return monstersLevel.get(); }
 	default float	monstersLevel()				{
 		switch (monstersLevel.get()) {
-			case "Easy":	return 0.7f;
-			case "Normal":
-			default:		return 1.0f;
+			case MONSTER_EASY:		return 0.7f;
+			case MONSTER_NORMAL:	return 1.0f;
+			case MONSTER_HARD:		return 1.4f;
+			case MONSTER_CUSTOM:
+				return (float) Math.pow(guardianMonstersLevel.get()/100f, 0.5);
+			default:				return 1.0f;
 		}
 	}
 	ParamBoolean isMoO1Monster				= new ParamBoolean(MOD_UI, "IS_MOO1_MONSTER", false)
 			.setDefaultValue(MOO1_DEFAULT, true);
 	default Boolean	isMoO1Monster()				{ return isMoO1Monster.get(); }
+
 	ParamList    monstersGNNNotification	= new ParamList( MOD_UI, "MONSTERS_GNN", "All")
 		.showFullGuide(true)
 		.put("All", 	MOD_UI + "MONSTERS_GNN_ALL")
@@ -275,7 +287,7 @@ public interface IRandomEvents extends IBaseOptsTools {
 				monstersGNNNotification,
 
 				headerSpacer,
-				IPreGameOptions.guardianMonstersLevel,
+				guardianMonstersLevel,
 				isMoO1Monster,
 				
 				headerSpacer,

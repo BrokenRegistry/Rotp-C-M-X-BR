@@ -30,7 +30,8 @@ import rotp.util.Base;
 public class AITreasurer implements Base, Treasurer {
     private final Empire empire;
     private float maxReserveNeeded = 0;
-    public float maxReserveNeeded() {
+    @Override
+	public float maxReserveNeeded() {
         return maxReserveNeeded;
     }
     public AITreasurer (Empire c) {

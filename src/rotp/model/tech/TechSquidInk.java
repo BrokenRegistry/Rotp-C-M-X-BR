@@ -37,7 +37,7 @@ public final class TechSquidInk extends Tech {
 	}
 	@Override public void init()	{
 		super.init();
-		techType = Tech.MONSTER_SPECIAL;
+		techType = Tech.SQUID_INK;
 		switch(typeSeq) {
 			case 0:
 				cost = 100;
@@ -47,9 +47,7 @@ public final class TechSquidInk extends Tech {
 		}
 	}
 	@Override public boolean isMonsterTech()			{ return true; }
-	@Override public float baseValue(Empire c)			{
-		return c.ai().scientist().baseValue((TechBlackHole)TechLibrary.current().tech("BlackHole:0"));
-	}
+	@Override public float baseValue(Empire c)			{ return c.ai().scientist().baseValue(this); }
 	@Override public boolean providesShipComponent()	{ return true; }
 	@Override public void provideBenefits(Empire c)		{
 		super.provideBenefits(c);

@@ -1,5 +1,0 @@
-
-[tech]
-seq:    0
-name:   RESISTREPULSOR_0_NAME
-detail: RESISTREPULSOR_0_DETAIL

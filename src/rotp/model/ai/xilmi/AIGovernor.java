@@ -27,7 +27,6 @@ import rotp.model.empires.EmpireView;
 import rotp.model.empires.SystemView;
 import rotp.model.galaxy.ShipFleet;
 import rotp.model.galaxy.StarSystem;
-import rotp.model.planet.Planet;
 import rotp.model.ships.ShipDesign;
 import rotp.model.ships.ShipDesignLab;
 import rotp.util.Base;
@@ -662,7 +661,7 @@ public class AIGovernor implements Base, Governor {
                         planetStack.num = 1;
                     damage += (fl.num[i] * d.wpnCount(j) * d.weapon(j).estimatedBombardDamage(d, planetStack));
                 }
-                for (int j=0;j<ShipDesign.maxSpecials();j++)
+                for (int j=0;j<d.maxSpecials();j++)
                     damage += d.special(j).estimatedBombardDamage(d, planetStack);
             }
         }

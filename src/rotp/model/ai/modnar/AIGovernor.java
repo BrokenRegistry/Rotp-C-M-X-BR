@@ -119,7 +119,7 @@ public class AIGovernor implements Base, Governor {
         int prevDef = col.defense().allocation();
         int prevInd = col.industry().allocation();
         int prevEco = col.ecology().allocation();
-        int prevRes = col.research().allocation();
+        // int prevRes = col.research().allocation();
 
         int cleanEco = col.ecology().cleanupAllocationNeeded();
         int maxInd = col.industry().maxAllocationNeeded();
@@ -369,7 +369,7 @@ public class AIGovernor implements Base, Governor {
         StarSystem sys = col.starSystem();
         int currBases = col.defense().missileBases();
         
-        // modnar: scale desired base count based on difficulty, rich-ness, and artifact level
+        // modnar: scale desired base count based on difficulty, richness, and artifact level
         // (no decrease with poor-ness, since they will become easy tech capture targets)
         float baseMultiplier = (float) Math.sqrt(options().aiProductionModifier());
         if (empire.sv.isArtifact(sys.id))

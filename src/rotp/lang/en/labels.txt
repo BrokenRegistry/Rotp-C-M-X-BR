@@ -3129,7 +3129,7 @@ SETTINGS_MOD_GUARDIAN_MONSTERS_RICH_DESC | Rich and Ultra-Rich planets can be gu
 SETTINGS_MOD_GUARDIAN_MONSTERS_RICH      | Rich
 SETTINGS_MOD_GUARDIAN_MONSTERS_RUIN_DESC | Artifact planets can be guarded by Space Monsters.
 SETTINGS_MOD_GUARDIAN_MONSTERS_RUIN      | Artifact
-SETTINGS_MOD_GUARDIAN_MONSTERS_PCT_DESC  | Base probability (in %) for good planets to have a Space Monster. This value will be multiplied by the planet size (in %).
+SETTINGS_MOD_GUARDIAN_MONSTERS_PCT_DESC  | Base probability (in %) for good planets to have a Space Monster. This value will be multiplied by the planet size (in %).<br>Larger values ​​lead to more monsters.
 SETTINGS_MOD_GUARDIAN_MONSTERS_PCT        | Guardians Prob: %1%
 SETTINGS_MOD_GUARDIAN_MONSTERS_LEVEL_DESC | Difficulty level for Guardian Space Monsters.
 SETTINGS_MOD_GUARDIAN_MONSTERS_LEVEL      | Guardians Level: %1%
@@ -3159,7 +3159,7 @@ REF_INTRO        | <br><u>Event Description:</u><br>
 // ========== RANDOM EVENT GLOBAL PARAMETERS
 SETTINGS_MOD_EVENTS_START_TURN_DESC      | To set the starting turn of random events. If an event has already been started, it will not be stopped.
 SETTINGS_MOD_EVENTS_START_TURN           | Random Events Starting Turn: %1
-SETTINGS_MOD_EVENTS_PACE_DESC            | To adjust the probability of the next event occurring.
+SETTINGS_MOD_EVENTS_PACE_DESC            | To adjust the probability of the next event occurring.<br>Larger values ​​lead to more events.
 SETTINGS_MOD_EVENTS_PACE                 | Events Pace: %1%
 SETTINGS_MOD_EVENTS_FAVOR_WEAK_HELP      | By default, Yes, the Random events are a catch-up mechanic that favors weaker factions.<br>Once the event is determined, it will target a civilization based on how well they're doing in the game. Favorable events are more likely to happen to empires with lower overall production, whereas unfavorable events are more likely to happen to empires with higher overall production.<br>This propensity can be removed and replaced by an equal probability for each empire.
 SETTINGS_MOD_EVENTS_FAVOR_WEAK_DESC      | To adjust the probability of the next event occurring.
@@ -3177,13 +3177,17 @@ SETTINGS_MOD_MONSTERS_GIVE_LOOTS_NO       | →BOOLEAN_NO←
 SETTINGS_MOD_MONSTERS_GIVE_LOOTS_YES_DESC | BC, Tech, or Ship
 SETTINGS_MOD_MONSTERS_GIVE_LOOTS_NO_DESC  | Default value (Vanilla)
 
-SETTINGS_MOD_MONSTERS_LEVEL_HELP         | Default RotP Monsters are quite challenging. This option will cut the difficulty in half.
-SETTINGS_MOD_MONSTERS_LEVEL_DESC         | To allow easier Monsters.
-SETTINGS_MOD_MONSTERS_LEVEL              | Monsters level: %1
+SETTINGS_MOD_MONSTERS_LEVEL_HELP         | Default RotP Monsters are quite challenging. This option will cut the difficulty in half.<br>Or double the difficulty for those who like challenges.
+SETTINGS_MOD_MONSTERS_LEVEL_DESC         | To customize the RotP Monster level.
+SETTINGS_MOD_MONSTERS_LEVEL              | RotP Monsters: %1
 SETTINGS_MOD_MONSTERS_LEVEL_NORMAL       | Normal
+SETTINGS_MOD_MONSTERS_LEVEL_NORMAL_DESC  | Classic Monsters... Quite a challenge!
 SETTINGS_MOD_MONSTERS_LEVEL_EASY         | Easy
-SETTINGS_MOD_MONSTERS_LEVEL_NORMAL_DESC  | Vanilla Monsters... Quite a challenge!
-SETTINGS_MOD_MONSTERS_LEVEL_EASY_DESC    | Less scary monsters.
+SETTINGS_MOD_MONSTERS_LEVEL_EASY_DESC    | Less scary monsters. Halve the difficulty.
+SETTINGS_MOD_MONSTERS_LEVEL_HARD         | Hard
+SETTINGS_MOD_MONSTERS_LEVEL_HARD_DESC    | Less scary monsters. Twice the difficulty.
+SETTINGS_MOD_MONSTERS_LEVEL_CUSTOM       | Custom
+SETTINGS_MOD_MONSTERS_LEVEL_CUSTOM_DESC  | Linked to the Guardian monsters level.
 
 SETTINGS_MOD_MONSTERS_GNN_HELP           | GNN Monster Notification Repetition: With the multiple occurrence of monsters, the number of GNN Notification can become bothersome. They can be limited to one per Monster appearance, or one per Monster type.
 SETTINGS_MOD_MONSTERS_GNN_DESC           | GNN Monster Notification Repetition: With the multiple occurrence of monsters, the number of GNN Notification can become bothersome. They can be limited to one per Monster appearance, or one per Monster type.
@@ -3787,6 +3791,9 @@ RACES_DIPLOMACY_TOTAL_TRADE       | Total Trade Treaties
 RACES_DIPLOMACY_TRADE_AMT         | %1 BC
 RACES_DIPLOMACY_CHARACTER         | Character
 RACES_DIPLOMACY_STATUS            | Status
+RACES_DIPLOMACY_LAST_VOTE         | Last Vote
+RACES_DIPLOMACY_VOTE_FOR_PLAYER   | For You
+RACES_DIPLOMACY_ABSTAIN           | Abstained
 RACES_DIPLOMACY_RELATIONS_METER   | Relations Meter
 RACES_DIPLOMACY_RELATIONS_UNKNOWN | The mood and motives of the [alien_empire] are inscrutable to our diplomats and spies.
 RACES_DIPLOMACY_BUREAU            | Diplomacy Bureau

@@ -604,7 +604,7 @@ public final class TechShipWeapon extends Tech {
         if (source.design() != null)
         	sourceSize = source.design().size();
         int shieldBorders = opt.shieldBorder(sourceSize);
-		boolean playerIsTarget = (target.empire != null) && target.empire.isPlayer();
+		boolean playerIsTarget = (target.empire() != null) && target.empire().isPlayer();
 
         Graphics2D g = (Graphics2D) ui.getGraphics();
         ShipComponent wpn = source.weapon(wpnNum);

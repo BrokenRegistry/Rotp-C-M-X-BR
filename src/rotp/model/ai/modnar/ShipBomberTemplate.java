@@ -51,7 +51,7 @@ public class ShipBomberTemplate implements Base {
     }
     public static float estimatedDamage(ShipDesign d, EnemyColonyTarget target) {
         List<ShipSpecial> rangeSpecials = new ArrayList<>();
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             ShipSpecial sp = d.special(i);
             if (sp.allowsCloaking()
             || (sp.allowsTeleporting() && !target.hasInterdictors))
@@ -147,14 +147,14 @@ public class ShipBomberTemplate implements Base {
                 d.maneuver(prevManv);
         }
     }
-    private void setBestBattleComputer(ShipDesigner ai, ShipDesign d) {
+    /* private void setBestBattleComputer(ShipDesigner ai, ShipDesign d) {
         List<ShipComputer> comps = ai.lab().computers();
         for (int i=comps.size()-1; i >=0; i--) {
             d.computer(comps.get(i));
             if (d.availableSpace() >= 0)
                 return;
         }
-    }
+    } */
  // add 2nd best battle computer option
     private void set2ndBestBattleComputer(ShipDesigner ai, ShipDesign d) {
         List<ShipComputer> comps = ai.lab().computers();

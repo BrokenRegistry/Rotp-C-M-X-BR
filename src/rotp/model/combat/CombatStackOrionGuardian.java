@@ -17,33 +17,37 @@ package rotp.model.combat;
 
 import java.awt.Color;
 
+import rotp.model.ai.OrionGuardianCaptain;
+import rotp.model.ai.interfaces.ShipCaptain;
 import rotp.model.galaxy.SpaceMonster;
 import rotp.model.galaxy.StarSystem;
-import rotp.model.ships.ShipComponent;
 
 public class CombatStackOrionGuardian extends CombatStackMonster {
-	public CombatStackOrionGuardian(SpaceMonster fl, String imageKey, Float monsterLevel, int designId) {
-		super(fl, imageKey, monsterLevel, designId, false);
+	public CombatStackOrionGuardian(SpaceMonster fl, String imageKey, Float level, int desId, Color shieldC) {
+		super(fl, imageKey, level, desId, false, shieldC);
 	}
 
+	@Override protected ShipCaptain getCaptain()		{
+		if (options().isMoO1Monster())
+			return super.getCaptain();
+		else
+			return new OrionGuardianCaptain();
+	}
 	@Override public int optimalFiringRange(CombatStack tgt)	{ return 3; }
 	@Override public int maxFiringRange(CombatStack tgt)	{
-		if (roundsRemaining[0]>0)
+		if (roundsRemaining(0)>0)
 			return 9;
-		else if (wpnTurnsToFire[2] < 2)
+		else if (wpnTurnsToFire(2) < 2)
 			return 10;
 		else
 			return optimalFiringRange(tgt);
 	}
-	@Override public String	 name()				{ return text(name); }
 	@Override public boolean immuneToStasis()	{ return true; }
 	@Override public void reloadWeapons()		{
-		for (int i=0;i<shotsRemaining.length;i++) 
-			shotsRemaining[i] = 1;
-		for (ShipComponent c: weapons)
-			c.reload(); 
+		for (int i=0; i<4; i++) 
+			shotsRemaining(i, 1);
+		reloadComponents();
 	};
-	@Override public Color shieldBaseColor()	{ return Color.blue; }
 	@Override public boolean hostileTo(CombatStack st, StarSystem sys)	{ return !st.isMonster(); }
 	@Override public boolean selectBestWeapon(CombatStack target)	{
 		if (target.destroyed())

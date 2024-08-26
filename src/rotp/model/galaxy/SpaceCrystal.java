@@ -15,9 +15,11 @@
  */
 package rotp.model.galaxy;
 
+import java.awt.Color;
 import java.util.List;
 
 import rotp.model.colony.Colony;
+import rotp.model.combat.CombatStackMonster;
 import rotp.model.combat.CombatStackSpaceCrystal;
 import rotp.model.planet.PlanetType;
 import rotp.model.ships.ShipArmor;
@@ -26,34 +28,25 @@ import rotp.model.ships.ShipDesign;
 import rotp.model.ships.ShipDesignLab;
 import rotp.model.ships.ShipECM;
 import rotp.model.ships.ShipEngine;
-import rotp.model.ships.ShipManeuver;
 import rotp.model.ships.ShipShield;
-import rotp.model.ships.ShipSpecialBlackHole;
-import rotp.model.ships.ShipSpecialMissileShield;
-import rotp.model.ships.ShipSpecialPulsar;
-import rotp.model.ships.ShipSpecialRepair;
-import rotp.model.ships.ShipSpecialShipNullifier;
-import rotp.model.ships.ShipWeaponBeam;
-import rotp.model.tech.TechAutomatedRepair;
-import rotp.model.tech.TechBlackHole;
-import rotp.model.tech.TechEnergyPulsar;
-import rotp.model.tech.TechMissileShield;
-import rotp.model.tech.TechShipNullifier;
-import rotp.model.tech.TechShipWeapon;
 
 public class SpaceCrystal extends SpaceMonster {
     private static final long serialVersionUID = 1L;
-    public SpaceCrystal(Float speed, Float level) {
-        super("SPACE_CRYSTAL", -3, speed, level);
-    }
+    private static final Color shieldColor	= Color.cyan;
+    private static final String imageKey	= "SPACE_CRYSTAL";
+    private static final boolean isFusion	= false;
+
+    public SpaceCrystal(Float speed, Float level) { super(imageKey, -3, speed, level); }
+
     @Override  public void initCombat() {
     	super.initCombat();
-//		if (options().isMoO1Monster())
-//			addCombatStack(new CombatStackMoO1SpaceCrystal(this, "SPACE_CRYSTAL", 1f, 0));
-//		else
-			addCombatStack(new CombatStackSpaceCrystal(this, travelSpeed(), stackLevel()));	   
+		if (options().isMoO1Monster())
+			addCombatStack(new CombatStackMonster(this, imageKey, stackLevel(), 0, isFusion, shieldColor));
+		else
+			addCombatStack(new CombatStackSpaceCrystal(this, imageKey, stackLevel(), 0, shieldColor));
     }
     @Override public SpaceMonster getCopy()		{ return new SpaceCrystal(null, null); }
+    @Override protected int otherSpecialCount() { return options().isMoO1Monster()? 1:2; }
     @Override public void degradePlanet(StarSystem sys) {
         Colony col = sys.colony();
         if (col != null) {
@@ -70,61 +63,52 @@ public class SpaceCrystal extends SpaceMonster {
 	private int hullHitPoints()		{ return moO1Level (5000, 1000, 500, 0.5f, 0.25f); }
 	@Override protected ShipDesign designMoO1()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		// System.out.println();
-		// System.out.print("design ");
-		ShipDesign design = lab.newBlankDesign(-hullHitPoints());
+		ShipDesign design = lab.newBlankDesign(4, hullHitPoints());
 		design.mission	(ShipDesign.DESTROYER);
 
-		// System.out.print("engine ");
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(1, engines.size()-1)));
 
-		// System.out.print("computer ");
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int attackLevel = stackLevel(10);
+		design.computer	(computers.get(min(attackLevel, computers.size()-1)));
 
-		// System.out.print("armor ");
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
 
-		// System.out.print("shield ");
 		List<ShipShield> shields = lab.shields();
 		design.shield	(shields.get(stackLevel(5, shields.size()-1)));
 
-		// System.out.print("ecm ");
 		List<ShipECM> ecms = lab.ecms();
 		design.ecm		(ecms.get(stackLevel(2, ecms.size()-1)));
 
-		// System.out.print("maneuver ");
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(1, maneuvers.size()-1)));
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(attackLevel);
+		design.monsterBeamDefense(1);
+		design.monsterEcmDefense(1);
+		design.monsterInitiative(100);
 
-		// System.out.print("weapon ");
 		int wpnAll = max(1, stackLevel(10));
 		for (int i=4; i>0; i--) {
 			int count = wpnAll/i;
 			if (count != 0) {
 				// Crystal ray
-				design.weapon(i-1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:23"), false), count);
+				design.weapon(i-1, lab.crystalRay(), count);
 				wpnAll -= count;
 			}
 		}
-		design.special(0, new ShipSpecialMissileShield((TechMissileShield)tech("MissileShield:3"))); // Lightning Shield
-		design.special(1, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
-		design.special(2, new ShipSpecialBlackHole((TechBlackHole)tech("EnergyPulsar:0"))); // Black Hole Generator
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+		design.special(0, lab.specialLightningShield());
+		design.special(1, lab.specialAdvDamControl());		// Advanced Damage control
+		design.special(2, lab.specialBlackHole());			// Black Hole Generator
+		design.special(3, lab.specialResistStasis());		// Immune to Stasis
 		return design;
 	}
-	@Override protected ShipDesign designRotP()	{ // TODO BR: Crystal RotP design
+	@Override protected ShipDesign designRotP()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		int hp = (int) (7000 * monsterLevel);
-		ShipDesign design = lab.newBlankDesign(-hp);
+		int hp = (int) (stackLevel(7000));
+		ShipDesign design = lab.newBlankDesign(5, hp);
 		
 		design.mission	(ShipDesign.DESTROYER);
 
@@ -132,7 +116,8 @@ public class SpaceCrystal extends SpaceMonster {
 		design.engine	(engines.get(stackLevel(0, engines.size()-1)));
 
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int computerLevel = stackLevel(10);
+		design.computer	(computers.get(min(computerLevel, computers.size()-1)));
 
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
@@ -143,18 +128,19 @@ public class SpaceCrystal extends SpaceMonster {
 		List<ShipECM> ecms = lab.ecms();
 		design.ecm		(ecms.get(stackLevel(0, ecms.size()-1)));
 
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(0, maneuvers.size()-1)));
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(20); // Always hit
+		design.monsterBeamDefense(1);
+		design.monsterEcmDefense(1);
+		design.monsterInitiative(100);
 
-		design.special(0, lab.specialTeleporter());
-		design.special(1, new ShipSpecialPulsar((TechEnergyPulsar)tech("EnergyPulsar:2"))); // Crystal Pulsar
-		design.special(2, new ShipSpecialShipNullifier((TechShipNullifier)tech("ShipNullifier:2"))); // Crystal Nullifier
-		
-		// design.special(0, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+		design.special(0, lab.specialZyroShield());
+		design.special(1, lab.specialTeleporter());
+		design.special(2, lab.specialCrystalPulsar());
+		design.special(3, lab.specialCrystalNullifier());
+		design.special(4, lab.specialResistStasis());
 		return design;
 	}
 }

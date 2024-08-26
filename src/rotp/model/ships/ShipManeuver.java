@@ -19,12 +19,17 @@ import rotp.model.tech.TechEngineWarp;
 
 public final class ShipManeuver extends ShipComponent {
     private static final long serialVersionUID = 1L;
+    private Integer monsterSpeed;
     public ShipManeuver() {
         sequence(0);
     }
     public ShipManeuver(TechEngineWarp t) {
         tech(t);
         sequence(t.level);
+    }
+    public ShipManeuver(TechEngineWarp t, int speed) { // BR: for Monsters
+    	this(t);
+        monsterSpeed = speed;
     }
     @Override
     public TechEngineWarp tech()      { return (TechEngineWarp) super.tech(); }
@@ -41,7 +46,11 @@ public final class ShipManeuver extends ShipComponent {
     public float size(ShipDesign d)  { return 0; }
     @Override
     public float cost(ShipDesign d)  { return (enginesRequired(d) * d.engine().cost(d)); }
-    public int combatSpeed()          { return tech() == null ? 0 : (int) ((tech().baseWarp() + 2) / 2); }
+    public int combatSpeed()         {
+    	if (monsterSpeed != null)
+    		return monsterSpeed;
+    	return tech() == null ? 0 : (int) ((tech().baseWarp() + 2) / 2);
+    }
     @Override
     public String fieldValue(int n, ShipDesign d, int bank) {
         switch(n) {

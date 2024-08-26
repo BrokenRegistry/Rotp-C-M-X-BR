@@ -51,7 +51,7 @@ public class ShipDestroyerTemplate implements Base {
     }
     public static float estimatedDamage(ShipDesign d, EnemyShipTarget target) {
         List<ShipSpecial> rangeSpecials = new ArrayList<>();
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             ShipSpecial sp = d.special(i);
             if (sp.allowsCloaking()
             || (sp.allowsTeleporting() && !target.hasInterdictors)
@@ -171,14 +171,14 @@ public class ShipDestroyerTemplate implements Base {
                 return;
         }
     }
-    private void setBestECMJammer(ShipDesigner ai, ShipDesign d) {
+    /* private void setBestECMJammer(ShipDesigner ai, ShipDesign d) {
         List<ShipECM> comps = ai.lab().ecms();
         for (int i=comps.size()-1; i >=0; i--) {
             d.ecm(comps.get(i));
             if (d.availableSpace() >= 0)
                 return;
         }
-    }
+    } */
  // add 2nd best ECM option
     private void set2ndBestECMJammer(ShipDesigner ai, ShipDesign d) {
         List<ShipECM> comps = ai.lab().ecms();
@@ -199,7 +199,7 @@ public class ShipDestroyerTemplate implements Base {
             }
         }
     }
-    private void setBestReinforcedArmor(ShipDesigner ai, ShipDesign d) {
+    /* private void setBestReinforcedArmor(ShipDesigner ai, ShipDesign d) {
         List<ShipArmor> armors = ai.lab().armors();
         for (int i=armors.size()-1; i >=0; i--) {
             ShipArmor arm = armors.get(i);
@@ -209,7 +209,7 @@ public class ShipDestroyerTemplate implements Base {
                     return;
             }
         }
-    }
+    } */
     private void setBestShield(ShipDesigner ai, ShipDesign d) {
         List<ShipShield> shields = ai.lab().shields();
         for (int i=shields.size()-1; i >=0; i--) {

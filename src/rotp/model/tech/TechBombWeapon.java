@@ -45,35 +45,35 @@ public final class TechBombWeapon extends Tech {
         techType = Tech.BOMB_WEAPON;
 
         switch(typeSeq) {
-            case 0:
+            case 0:	// Nuclear Bomb
                 damageLow = 3;
                 damageHigh = 12;
                 cost = 5;
                 size = 40;
                 power = 10;
                 break;
-            case 1:
+            case 1:	// Fusion Bomb
                 damageLow = 5;
                 damageHigh = 20;
                 cost = 5;
                 size = 50;
                 power = 10;
                 break;
-            case 2:
+            case 2:	// Anti-Matter Bomb
                 damageLow = 10;
                 damageHigh = 40;
                 cost = 6;
                 size = 75;
                 power = 10;
                 break;
-            case 3:
+            case 3:	// Omega-V Bomb
                 damageLow = 20;
                 damageHigh = 50;
                 cost = 9;
                 size = 140;
                 power = 10;
                 break;
-            case 4:
+            case 4:	// Neutronium Bomb
                 damageLow = 40;
                 damageHigh = 70;
                 cost = 10;

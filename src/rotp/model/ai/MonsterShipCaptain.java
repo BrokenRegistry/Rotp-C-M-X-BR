@@ -444,7 +444,7 @@ public class MonsterShipCaptain implements Base, ShipCaptain {
 		ShipDesign d = ship.design();
 		for (int j=0;j<ShipDesign.maxWeapons();j++)
 			damage += (num * d.wpnCount(j) * d.weapon(j).estimatedBombardDamage(d, colony));
-		for (int j=0;j<ShipDesign.maxSpecials();j++)
+		for (int j=0;j<d.maxSpecials();j++)
 			damage += d.special(j).estimatedBombardDamage(d, colony);
 		return damage;
 	}

@@ -65,6 +65,14 @@ Later:
 
 ## What's New
 
+2024.08.26 (BR)
+- After first council, the last vote will be shown in the Empire-Diplomacy panel.
+- When hovered over, Space Monsters are displayed on the right panel.
+  - Pressing "H" will then display their specs.
+- Space Monsters can be replaced by their MoO1 equivalent.
+- All Space monsters now have a design, and extends ShipFleet.
+  - Their combat stack extends CombatStackShip.
+
 2024.08.10 (BR)
 - Fixed missing beam Animations
 

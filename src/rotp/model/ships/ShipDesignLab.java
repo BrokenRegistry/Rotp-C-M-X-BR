@@ -434,7 +434,23 @@ public class ShipDesignLab implements Base, Serializable {
                 return design;
         }
     }
-    public ShipDesign newBlankDesign(int size) {
+    public ShipDesign newBlankDesign(int numSpecial, int hullHitPoints) {
+        ShipDesign design = new ShipDesign(numSpecial, hullHitPoints);
+        design.active(false);
+        design.lab(this);
+        design.computer(computers().get(0));
+        design.shield(shields().get(0));
+        design.ecm(ecms().get(0));
+        design.armor(armors().get(0));
+        design.engine(engines().get(0));
+        design.maneuver(maneuvers().get(0));
+        for (int i=0; i<ShipDesign.maxWeapons(); i++)
+            design.weapon(i, weapons().get(0));
+        for (int i=0; i<numSpecial; i++)
+            design.special(i, specials().get(0));
+        return design;
+    }
+   public ShipDesign newBlankDesign(int size) {
         ShipDesign design = new ShipDesign(size);
         design.active(false);
         design.lab(this);
@@ -446,7 +462,7 @@ public class ShipDesignLab implements Base, Serializable {
         design.maneuver(maneuvers().get(0));
         for (int i=0;i<ShipDesign.maxWeapons();i++)
             design.weapon(i, weapons().get(0));
-        for (int i=0;i<ShipDesign.maxSpecials();i++)
+        for (int i=0;i<design.maxSpecials();i++)
             design.special(i, specials().get(0));
         return design;
     }
@@ -464,7 +480,7 @@ public class ShipDesignLab implements Base, Serializable {
         design.engine(engines().get(0));
         design.maneuver(maneuvers().get(0));
         design.shipColor(0);
-        for (int i=0;i<ShipDesign.maxSpecials();i++)
+        for (int i=0;i<design.maxSpecials();i++)
             design.special(i, specials().get(0));
     }
     public void scrapDesign(ShipDesign d) {
@@ -579,35 +595,31 @@ public class ShipDesignLab implements Base, Serializable {
     }
     public ShipWeapon beamWeapon(int seq, boolean heavy) {
         for (ShipWeapon wpn : weapons()) {
-            if (wpn.isBeamWeapon()) {
-                ShipWeaponBeam wpn2 = (ShipWeaponBeam) wpn;
-                System.out.println("wpn2.tech().sequence = " + wpn2.tech().sequence);
-                if ((wpn2.tech().sequence == seq) && (wpn2.heavy() == heavy))
-                    return wpn;
-            }
+            if (wpn.isBeamWeapon()
+	        		&& wpn.tech().typeSeq == seq
+	        		&& wpn.heavy() == heavy)
+                return wpn;
         }
         return null;
     }
     public ShipWeapon missileWeapon(int seq, int shots) {
         for (ShipWeapon wpn : weapons()) {
-            if (wpn.isMissileWeapon()) {
-                ShipWeaponMissile wpn2 = (ShipWeaponMissile) wpn;
-                if ((wpn2.tech().sequence == seq) && (wpn2.shots() == shots))
-                    return wpn;
-            }
+            if (wpn.isMissileWeapon()
+            		&& wpn.tech().typeSeq == seq
+            		&& wpn.shots() == shots)
+                return wpn;
         }
         return null;
     }
-    public ShipWeapon bombWeapon(int seq) {
+    public ShipWeapon torpedoWeapon(int seq)		{ return missileWeapon(seq, 1); }
+    public ShipWeapon bombWeapon(int seq)			{
         for (ShipWeapon wpn : weapons()) {
-            if (wpn.groundAttacksOnly()) {
-                if (((ShipWeaponBomb) wpn).tech().sequence == seq)
-                    return wpn;
-            }
+            if (wpn.groundAttacksOnly() && wpn.tech().typeSeq == seq)
+                return wpn;
         }
         return null;
     }
-    public ShipSpecial specialNamed(String s) {
+    public ShipSpecial specialNamed(String s)		{
         for (ShipSpecial spec : specials()) {
             if (spec.name().equals(s))
                 return spec;
@@ -616,44 +628,114 @@ public class ShipDesignLab implements Base, Serializable {
     }
     public ShipSpecial getSpecial(String s, int seq) {
         for (ShipSpecial special : specials()) {
-            if (special.name().equals(s) && special.sequence()==seq)
+            Tech tech = special.tech();
+            if (tech != null && tech.id.startsWith(s) && tech.typeSeq==seq)
                 return special;
         }
         return null;
     }
-    public ShipSpecial specialSquidInk()        { return getSpecial("Squid Ink", 0); }
-    public ShipSpecial specialAmoebaEatShips()  { return getSpecial("Eat Ships", 0); }
-    public ShipSpecial specialAutomatedRepair() { return getSpecial("AutomatedRepair", 0); }
-    public ShipSpecial specialAdvDamControl()   { return getSpecial("AutomatedRepair", 1); }
-
-    public ShipSpecial specialReserveFuel()     {
+    public ShipSpecial specialSquidInk()			{ return getSpecial("SquidInk", 0); }
+    public ShipSpecial specialAmoebaEatShips()		{ return getSpecial("AmoebaEatShips", 0); }
+    public ShipSpecial specialResistRepulsor()		{ return getSpecial("ResistSpecial", 0); }
+    public ShipSpecial specialResistStasis()		{ return getSpecial("ResistSpecial", 1); }
+    public ShipSpecial specialAmoebaMaxDamage()		{ return getSpecial("AutomatedRepair", 2); }
+    public ShipSpecial specialAmoebaMitosis()		{ return getSpecial("AutomatedRepair", 3); }
+    public ShipSpecial specialCrystalPulsar()		{ return getSpecial("EnergyPulsar", 2); }
+    public ShipSpecial specialCrystalNullifier()	{ return getSpecial("ShipNullifier", 2); }
+    public ShipSpecial specialAutomatedRepair()		{ return getSpecial("AutomatedRepair", 0); }
+    public ShipSpecial specialAdvDamControl()		{ return getSpecial("AutomatedRepair", 1); }
+    public ShipSpecial specialBlackHole()			{ return getSpecial("EnergyPulsar", 0); }
+    public ShipSpecial specialAntiMissileRockets()	{ return getSpecial("MissileShield", 0); }
+    public ShipSpecial specialZyroShield()			{ return getSpecial("MissileShield", 1); }
+    public ShipSpecial specialLightningShield()		{ return getSpecial("MissileShield", 2); }
+    public ShipSpecial specialHighEnergyFocus()		{ return getSpecial("BeamFocus", 0); }
+    public ShipSpecial specialInertialStabilizer()	{ return getSpecial("ShipInertial", 0); }
+    public ShipSpecial specialInertialNullifier()	{ return getSpecial("ShipInertial", 1); }
+    public ShipSpecial specialReserveFuel()			{
         for (ShipSpecial spec : specials()) {
             if (spec.isFuelRange())
                 return spec;
         }
         return null;
     }
-    public ShipSpecial specialBattleScanner()   {
+    public ShipSpecial specialBattleScanner()		{
         for (ShipSpecial spec : specials()) {
             if (spec.allowsScanning())
                 return spec;
         }
         return null;
     }
-    public ShipSpecial specialTeleporter() {
+    public ShipSpecial specialTeleporter()			{
         for (ShipSpecial spec : specials()) {
             if (spec.allowsTeleporting())
                 return spec;
         }
         return null;
     }
-    public ShipSpecial specialCloak() {
+    public ShipSpecial specialCloak()				{
         for (ShipSpecial spec : specials()) {
             if (spec.allowsCloaking())
                 return spec;
         }
         return null;
     }
+
+    public ShipWeapon nuclearBomb()					{ return bombWeapon(0); }
+    public ShipWeapon fusionBomb()					{ return bombWeapon(1); }
+    public ShipWeapon antiMatterBomb()				{ return bombWeapon(2); }
+    public ShipWeapon omegaVBomb()					{ return bombWeapon(3); }
+    public ShipWeapon neutroniumBomb()				{ return bombWeapon(4); }
+
+    public ShipWeapon laserBeam(boolean heavy)		{ return beamWeapon( 0, heavy); }
+    public ShipWeapon gatlingLaser()				{ return beamWeapon( 1, false); }
+    public ShipWeapon netronPelletGun()				{ return beamWeapon( 2, false); }
+    public ShipWeapon ionCannon(boolean heavy)		{ return beamWeapon( 3, heavy); }
+    public ShipWeapon massDriver()					{ return beamWeapon( 4, false); }
+    public ShipWeapon neutronBlaster(boolean heavy) { return beamWeapon( 5, heavy); }
+    public ShipWeapon gravitonBeam()				{ return beamWeapon( 6, false); }
+    public ShipWeapon hardBeam()					{ return beamWeapon( 7, false); }
+    public ShipWeapon fusionBeam(boolean heavy)		{ return beamWeapon( 8, heavy); }
+    public ShipWeapon megaboltCannon()				{ return beamWeapon( 9, false); }
+    public ShipWeapon phasorBeam(boolean heavy)		{ return beamWeapon(10, heavy); }
+    public ShipWeapon autoBlaster()					{ return beamWeapon(11, false); }
+    public ShipWeapon tachyonBeam()					{ return beamWeapon(12, false); }
+    public ShipWeapon gaussAutoCannon()				{ return beamWeapon(13, false); }
+    public ShipWeapon particleBeam()				{ return beamWeapon(14, false); }
+    public ShipWeapon plasmaCannon()				{ return beamWeapon(15, false); }
+    public ShipWeapon deathRay()					{ return beamWeapon(16, false); }
+    public ShipWeapon disruptor()					{ return beamWeapon(17, false); }
+    public ShipWeapon pulsePhasor()					{ return beamWeapon(18, false); }
+    public ShipWeapon triFocusPlasmaCannon()		{ return beamWeapon(19, false); }
+    public ShipWeapon stellarConverter()			{ return beamWeapon(20, false); }
+    public ShipWeapon maulerDevice()				{ return beamWeapon(21, false); }
+    public ShipWeapon amoebaStream()				{ return beamWeapon(22, false); }
+    public ShipWeapon crystalRay()					{ return beamWeapon(23, false); }
+    public ShipWeapon jellyfishDart()				{ return beamWeapon(24, false); }
+
+    public ShipWeapon antiMatterTorpedoes()			{ return torpedoWeapon(0); }
+    public ShipWeapon hellFireTorpedoes()			{ return torpedoWeapon(1); }
+    public ShipWeapon protonTorpedoes()				{ return torpedoWeapon(2); }
+    public ShipWeapon plasmaTorpedoes()				{ return torpedoWeapon(3); }
+
+    private ShipWeapon missileWeapon(int seq, boolean x5)	{ return missileWeapon(seq, x5? 5 : 2); }
+    public ShipWeapon nuclearMissiles(boolean x5)			{ return missileWeapon( 0, x5); }
+    public ShipWeapon hyperVRockets(boolean x5)				{ return missileWeapon( 1, x5); }
+    public ShipWeapon hyperXRockets(boolean x5)				{ return missileWeapon( 2, x5); }
+    public ShipWeapon scatterPackVRockets(boolean x5)		{ return missileWeapon( 3, x5); }
+    public ShipWeapon merculiteMissiles(boolean x5)			{ return missileWeapon( 4, x5); }
+    public ShipWeapon stingerMissiles(boolean x5)			{ return missileWeapon( 5, x5); }
+    public ShipWeapon scatterPackVIIMissiles(boolean x5)	{ return missileWeapon( 6, x5); }
+    public ShipWeapon pulsonMissiles(boolean x5)			{ return missileWeapon( 7, x5); }
+    public ShipWeapon hercularMissiles(boolean x5)			{ return missileWeapon( 8, x5); }
+    public ShipWeapon zeonMissiles(boolean x5)				{ return missileWeapon( 9, x5); }
+    public ShipWeapon scatterPackXMissiles(boolean x5)		{ return missileWeapon(10, x5); }
+    
+    public ShipManeuver maneuver(int combatSpeed) { // For Monsters only
+    	int id = bounds(0, combatSpeed-1, maneuvers().size()-1);
+    	TechEngineWarp tech = maneuvers().get(id).tech();
+    	return new ShipManeuver(tech, combatSpeed);
+    }
+
     public ShipDesign designNamed(String s) {
         for (ShipDesign des : designs()) {
             if (des.active() && des.name().equals(s))

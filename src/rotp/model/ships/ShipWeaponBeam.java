@@ -67,10 +67,10 @@ public final class ShipWeaponBeam extends ShipWeapon {
     }
     @Override
     public void fireUpon(CombatStack source, CombatStack target, int count, ShipCombatManager mgr) {
-        if (random() < target.autoMissPct()) {
-           	drawUnsuccessfulAttack(source, target, count);
-            return;
-        }
+//        if (random() < target.autoMissPct()) {
+//           	drawUnsuccessfulAttack(source, target, count);
+//            return;
+//        }
         float totalDamage = 0;
         float totalLatent = 0; // BR: Damages if not shielded
         float asteroidsMod = 0;

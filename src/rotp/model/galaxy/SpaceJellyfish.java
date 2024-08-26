@@ -15,82 +15,73 @@
  */
 package rotp.model.galaxy;
 
+import java.awt.Color;
 import java.util.List;
 
-import rotp.model.combat.CombatStackSpaceJellyfish;
+import rotp.model.combat.CombatStackMonster;
 import rotp.model.ships.ShipArmor;
 import rotp.model.ships.ShipComputer;
 import rotp.model.ships.ShipDesign;
 import rotp.model.ships.ShipDesignLab;
 import rotp.model.ships.ShipECM;
 import rotp.model.ships.ShipEngine;
-import rotp.model.ships.ShipManeuver;
 import rotp.model.ships.ShipShield;
-import rotp.model.ships.ShipWeaponBeam;
-import rotp.model.tech.TechShipWeapon;
 
 public class SpaceJellyfish extends GuardianMonsters {
 	private static final long serialVersionUID = 1L;
-	private static final String IMAGE_KEY = "SPACE_JELLYFISH";
+	private static final Color shieldColor	= Color.blue;
+	private static final String imageKey	= "SPACE_JELLYFISH";
+	private static final boolean isFusion	= true;
+
 	public SpaceJellyfish(Float speed, Float level) {
-		super(IMAGE_KEY, -2, speed, level);
+		super(imageKey, -2, speed, level);
 		num(0, 1); // Number of monsters
 	}
-	@Override public void initCombat()	 {
+
+	@Override public void initCombat()			{
 		super.initCombat();
-		addCombatStack(new CombatStackSpaceJellyfish(this, IMAGE_KEY, stackLevel(), 0));	   
+		addCombatStack(new CombatStackMonster(this, imageKey, stackLevel(), 0, isFusion, shieldColor));
 	}
 	@Override public SpaceMonster getCopy()		{ return new SpaceJellyfish(null, null); }
+	@Override protected int otherSpecialCount() { return 2; }
 	@Override protected ShipDesign designRotP()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		// System.out.println();
-		// System.out.print("design ");
 		ShipDesign design = lab.newBlankDesign(Math.max(ShipDesign.MEDIUM,
 								stackLevel(ShipDesign.LARGE, ShipDesign.HUGE)));
 		design.mission	(ShipDesign.DESTROYER);
 
-		// System.out.print("engine ");
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(0, engines.size()-1)));
 
-		// System.out.print("computer ");
 		List<ShipComputer> computers = lab.computers();
 		design.computer	(computers.get(stackLevel(2, computers.size()-1)));
 
-		// System.out.print("armor ");
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(2, armors.size()-1)));
 
-		// System.out.print("shield ");
 		List<ShipShield> shields = lab.shields();
 		design.shield	(shields.get(stackLevel(2, shields.size()-1)));
 
-		// System.out.print("ecm ");
 		List<ShipECM> ecms = lab.ecms();
 		design.ecm		(ecms.get(stackLevel(2, ecms.size()-1)));
 
-		// System.out.print("maneuver ");
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(0, maneuvers.size()-1)));
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
 
-		// System.out.print("weapon ");
 		int wpnAll = max(1, stackLevel(10));
 		for (int i=4; i>0; i--) {
 			int count = wpnAll/i;
 			if (count != 0) {
-				// jellyfish darts
-				design.weapon(i-1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
-				// design.addWeapon(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:24"), false), count);
+				design.weapon(i-1, lab.jellyfishDart(), count);
 				wpnAll -= count;
 			}
 		}
 		design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+		design.special(1, lab.specialResistStasis());		// Immune to Stasis
+		
+		design.monsterInitiative(100);
+		
 		return design;
 	}
-
 }

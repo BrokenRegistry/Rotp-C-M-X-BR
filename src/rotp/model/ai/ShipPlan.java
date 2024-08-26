@@ -54,7 +54,7 @@ public class ShipPlan implements Base, Serializable {
             ShipFleet fl = orders.owningFleet;
             float dist = fl.empire().sv.distance(plan.destId);
             if (design.validMission(plan.destId) && (design.range() > dist) ) {
-                StarSystem dest = galaxy().system(plan.destId);
+                // StarSystem dest = galaxy().system(plan.destId);
                 //ail: Fix for https://www.reddit.com/r/rotp/comments/mpw4qr/base_ai_producing_way_too_many_scouts/
                 //Description of how this fixes it in comments
                 int turns = (int)Math.ceil(travelTimeFrom(fl.x(), fl.y(), design));

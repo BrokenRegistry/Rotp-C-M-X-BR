@@ -1034,7 +1034,7 @@ public class VIPEmpireView implements IVIPConsole {
 						out += NEWLINE + text("RACES_MILITARY_WEAPON_CNT", str(d.wpnCount(i)), d.weapon(i).name());
 				}
 			// Ship specials
-			for (int i=0;i<ShipDesign.maxSpecials();i++) {
+			for (int i=0; i<view.design().maxSpecials(); i++) {
 				if (view.specialKnown(i)) {
 					if (view.hasSpecial(i)) {
 						out += NEWLINE + d.special(i).name();

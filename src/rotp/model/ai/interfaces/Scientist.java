@@ -17,6 +17,7 @@ package rotp.model.ai.interfaces;
 
 import java.util.List;
 import rotp.model.tech.Tech;
+import rotp.model.tech.TechAmoebaEatShips;
 import rotp.model.tech.TechArmor;
 import rotp.model.tech.TechAtmosphereEnrichment;
 import rotp.model.tech.TechAutomatedRepair;
@@ -50,12 +51,12 @@ import rotp.model.tech.TechHyperspaceComm;
 import rotp.model.tech.TechImprovedIndustrial;
 import rotp.model.tech.TechImprovedTerraforming;
 import rotp.model.tech.TechIndustrialWaste;
-import rotp.model.tech.TechLibrary;
 import rotp.model.tech.TechMissileShield;
 import rotp.model.tech.TechMissileWeapon;
 import rotp.model.tech.TechPersonalShield;
 import rotp.model.tech.TechPlanetaryShield;
 import rotp.model.tech.TechRepulsor;
+import rotp.model.tech.TechResistSpecial;
 import rotp.model.tech.TechRoboticControls;
 import rotp.model.tech.TechScanner;
 import rotp.model.tech.TechShipInertial;
@@ -130,13 +131,17 @@ public interface Scientist {
     float baseValue(TechSubspaceInterdictor t);
     float baseValue(TechTeleporter t);
     float baseValue(TechTorpedoWeapon t);
-    
+
     //Xilmi-AI
     default boolean isImportant(Tech t) { return true; }
     default boolean isOptional(Tech t) { return false; }
     
     // Monster tech
-    default float baseValue(TechSquidInk t) {
-    	return baseValue((TechBlackHole)TechLibrary.current().tech("BlackHole:0"));
-    }
+    float baseValue(TechResistSpecial t);
+    float baseValue(TechAmoebaEatShips t);
+    float baseValue(TechSquidInk t);
+//    
+//    default float baseValue(TechSquidInk t) {
+//    	return baseValue((TechBlackHole)TechLibrary.current().tech("BlackHole:0"));
+//    }
 }

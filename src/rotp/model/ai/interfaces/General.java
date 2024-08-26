@@ -15,7 +15,6 @@
  */
 package rotp.model.ai.interfaces;
 
-import java.util.HashMap;
 import java.util.List;
 import rotp.model.ai.FleetStats;
 import rotp.model.empires.Empire;

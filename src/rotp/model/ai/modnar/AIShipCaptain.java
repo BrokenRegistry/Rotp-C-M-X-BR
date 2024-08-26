@@ -311,7 +311,7 @@ public class AIShipCaptain implements Base, ShipCaptain {
     @Override
     public boolean wantToRetreat(CombatStack currStack) {
         CombatStackColony col = combat().results().colonyStack;
-        EmpireView colView = (col == null) ? null : currStack.empire.viewForEmpire(col.empire);
+        EmpireView colView = (col == null) ? null : currStack.empire().viewForEmpire(col.empire());
         boolean inPact = (colView != null) && colView.embassy().pact();
             
         if (currStack == col)
@@ -376,9 +376,9 @@ public class AIShipCaptain implements Base, ShipCaptain {
             if (st.isMonster()) 
                 enemies.add(st);
             else {
-                if (stack.empire.alliedWith(id(st.empire)))
+                if (stack.empire().alliedWith(id(st.empire())))
                     allies().add(st);
-                else if (stack.empire.aggressiveWith(st.empire, combat().system()))
+                else if (stack.empire().aggressiveWith(st.empire(), combat().system()))
                     enemies().add(st);
             }
         }
@@ -428,7 +428,7 @@ public class AIShipCaptain implements Base, ShipCaptain {
         else if (allyKills == 0)
             return true;
         else {
-            float retreatRatio = stack.empire.diplomatAI().leaderRetreatRatio(combat().system().empire());
+            float retreatRatio = stack.empire().diplomatAI().leaderRetreatRatio(combat().system().empire());
             log("retreat ratio: "+retreatRatio+"   enemyKillValue:"+enemyKills+"  allyKillValue:"+allyKills);
             return ((enemyKills / allyKills) > retreatRatio/1.2f); // modnar: adjust AI to accept less losses, more likely to retreat
         }
@@ -579,7 +579,7 @@ public class AIShipCaptain implements Base, ShipCaptain {
         ShipDesign d = ship.design();
         for (int j=0;j<ShipDesign.maxWeapons();j++)
             damage += (num * d.wpnCount(j) * d.weapon(j).estimatedBombardDamage(d, colony));
-        for (int j=0;j<ShipDesign.maxSpecials();j++)
+        for (int j=0;j<d.maxSpecials();j++)
             damage += d.special(j).estimatedBombardDamage(d, colony);
         return damage;
     }

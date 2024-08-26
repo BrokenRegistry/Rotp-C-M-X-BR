@@ -130,6 +130,10 @@ public final class TechLibrary implements Base {
         if (type.equalsIgnoreCase("StasisField"))          { return new TechStasisField(type, level, seq, free, loadingCat); }
         if (type.equalsIgnoreCase("BlackHole"))            { return new TechBlackHole(type, level, seq, free, loadingCat); }
         if (type.equalsIgnoreCase("SquidInk"))             { return new TechSquidInk(type, level, seq, free, loadingCat); }
+        if (type.equalsIgnoreCase("ResistSpecial"))        {
+        	return new TechResistSpecial(type, level, seq, free, loadingCat);
+        	}
+        if (type.equalsIgnoreCase("AmoebaEatShips"))       { return new TechAmoebaEatShips(type, level, seq, free, loadingCat); }
         if (type.equalsIgnoreCase("ControlEnvironment"))   { return new TechControlEnvironment(type, level, seq, free, loadingCat); }
         if (type.equalsIgnoreCase("EcoRestoration"))       { return new TechEcoRestoration(type, level, seq, free, loadingCat); }
         if (type.equalsIgnoreCase("ImprovedTerraforming")) { return new TechImprovedTerraforming(type, level, seq, free, loadingCat); }
@@ -182,6 +186,7 @@ public final class TechLibrary implements Base {
     	loadTechLangFile(Tech.CONTROL_ENVIRONMENT, "ControlEnvironment.txt", dataDir);
     	loadTechLangFile(Tech.DEFLECTOR_SHIELD, "DeflectorShield.txt", dataDir);
     	loadTechLangFile(Tech.DISPLACEMENT, "Displacement.txt", dataDir);
+    	loadTechLangFile(Tech.EAT_SHIPS, "AmoebaEatShips.txt", dataDir);
     	loadTechLangFile(Tech.ECM_JAMMER, "ECMJammer.txt", dataDir);
     	loadTechLangFile(Tech.ECO_RESTORATION, "EcoRestoration.txt", dataDir);
     	loadTechLangFile(Tech.ENERGY_PULSAR, "EnergyPulsar.txt", dataDir);
@@ -198,13 +203,14 @@ public final class TechLibrary implements Base {
     	loadTechLangFile(Tech.PLANETARY_SHIELD, "PlanetaryShield.txt", dataDir);
     	loadTechLangFile(Tech.REPULSOR, "Repulsor.txt", dataDir);
     	loadTechLangFile(Tech.RESERVE_FUEL_RANGE, "ReserveFuelRange.txt", dataDir);
+    	loadTechLangFile(Tech.RESIST_SPECIAL, "ResistSpecial.txt", dataDir);
     	loadTechLangFile(Tech.ROBOTIC_CONTROLS, "RoboticControls.txt", dataDir);
     	loadTechLangFile(Tech.SCANNER, "Scanner.txt", dataDir);
     	loadTechLangFile(Tech.SHIP_INERTIAL, "ShipInertial.txt", dataDir);
     	loadTechLangFile(Tech.SHIP_NULLIFIER, "ShipNullifier.txt", dataDir);
     	loadTechLangFile(Tech.SHIP_WEAPON, "ShipWeapon.txt", dataDir);
     	loadTechLangFile(Tech.SOIL_ENRICHMENT, "SoilEnrichment.txt", dataDir);
-    	loadTechLangFile(Tech.MONSTER_SPECIAL, "MonsterSpecial.txt", dataDir);
+    	loadTechLangFile(Tech.SQUID_INK, "SquidInk.txt", dataDir);
     	loadTechLangFile(Tech.STARGATE, "Stargate.txt", dataDir);
     	loadTechLangFile(Tech.STASIS_FIELD, "StasisField.txt", dataDir);
     	loadTechLangFile(Tech.STREAM_PROJECTOR, "StreamProjector.txt", dataDir);

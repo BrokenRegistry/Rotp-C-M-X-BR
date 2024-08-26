@@ -15,10 +15,12 @@
  */
 package rotp.model.galaxy;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
+import rotp.model.combat.CombatStackMonster;
 import rotp.model.combat.CombatStackOrionGuardian;
 import rotp.model.empires.Empire;
 import rotp.model.incidents.DiplomaticIncident;
@@ -31,36 +33,27 @@ import rotp.model.ships.ShipECM;
 import rotp.model.ships.ShipEngine;
 import rotp.model.ships.ShipManeuver;
 import rotp.model.ships.ShipShield;
-import rotp.model.ships.ShipSpecialBeamFocus;
-import rotp.model.ships.ShipSpecialMissileShield;
-import rotp.model.ships.ShipSpecialRepair;
-import rotp.model.ships.ShipWeaponBeam;
-import rotp.model.ships.ShipWeaponMissile;
-import rotp.model.ships.ShipWeaponTorpedo;
-import rotp.model.tech.TechAutomatedRepair;
-import rotp.model.tech.TechBeamFocus;
-import rotp.model.tech.TechMissileShield;
-import rotp.model.tech.TechMissileWeapon;
-import rotp.model.tech.TechShipWeapon;
-import rotp.model.tech.TechTorpedoWeapon;
 import rotp.ui.main.GalaxyMapPanel;
 
 public class OrionGuardianShip extends GuardianMonsters {
     private static final long serialVersionUID = 1L;
-	private static final String IMAGE_KEY = "ORION_GUARDIAN";
+    private static final Color shieldColor	= Color.blue;
+    private static final String imageKey	= "ORION_GUARDIAN";
+    private static final boolean isFusion	= false;
     private final List<String> techs = new ArrayList<>();
-	public OrionGuardianShip(Float speed, Float level)	{
-		super(IMAGE_KEY, -2, speed, level);
+
+    public OrionGuardianShip(Float speed, Float level)	{
+		super(imageKey, -2, speed, level);
 		num(0, 1); // Number of monsters
 		if (!options().isMoO1Monster())
         techs.add("ShipWeapon:16");  // death ray
     }
-	@Override public void initCombat()	{
+	@Override public void initCombat()		{
         combatStacks().clear();
 		if (options().isMoO1Monster())
-			addCombatStack(new CombatStackOrionGuardian(this, IMAGE_KEY, 1f, 0));
+			addCombatStack(new CombatStackMonster(this, imageKey, stackLevel(), 0, isFusion, shieldColor));
 		else
-			addCombatStack(new CombatStackOrionGuardian(this, IMAGE_KEY, options().guardianMonstersLevel(), 0));	   
+			addCombatStack(new CombatStackOrionGuardian(this, imageKey, stackLevel(), 0, shieldColor));
     }
 	@Override public SpaceMonster getCopy() { return new OrionGuardianShip(null, null); }
 	@Override public int maxMapScale()		{ return GalaxyMapPanel.MAX_FLEET_HUGE_SCALE; }
@@ -72,14 +65,16 @@ public class OrionGuardianShip extends GuardianMonsters {
 
         removeGuardian();
     } 
-	@Override public boolean isGuardian()	{ return true; }
-	@Override public boolean isMonsterGuardian()	{ return false; }
-	@Override protected DiplomaticIncident killIncident(Empire emp)	{ return KillGuardianIncident.create(emp.id, lastAttackerId, nameKey); }
+	@Override public boolean isOrionGuardian()	{ return true; }
+	@Override public boolean isFusionGuardian()	{ return false; }
+	@Override protected DiplomaticIncident killIncident(Empire emp)	{
+		return KillGuardianIncident.create(emp.id, lastAttackerId, nameKey);
+	}
 
 	// BR: Redundant for backward compatibility
-	@Override public Image image()	{ return image(IMAGE_KEY); }
+	@Override public Image image()	{ return image(imageKey); }
 
-	// @Override protected int otherSpecialCount() { return 0; } // change if needed
+	@Override protected int otherSpecialCount() { return 1; } // change if needed
 	private int hullHitPoints()		{ return moO1Level (8000, 1000, 2000, 0.4f, 0.15f); }
 	private int defenseValue()		{ return moO1Level ( 7,  1, 1, 0.3f, 0.15f); }
 	private int rocketsCount()		{ return moO1Level (45, 20, 1, 0.3f, 0.15f); }
@@ -88,14 +83,15 @@ public class OrionGuardianShip extends GuardianMonsters {
 	@Override protected ShipDesign designMoO1()	{
 		ShipDesignLab lab = empire().shipLab();
 		
-		ShipDesign design = lab.newBlankDesign(-hullHitPoints());
+		ShipDesign design = lab.newBlankDesign(ShipDesign.maxSpecials, stackLevel(hullHitPoints()));
 		design.mission	(ShipDesign.DESTROYER);
 
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(1, engines.size()-1)));
 
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int attackLevel = stackLevel(10);
+		design.computer	(computers.get(min(attackLevel, computers.size()-1)));
 
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
@@ -109,41 +105,41 @@ public class OrionGuardianShip extends GuardianMonsters {
 
 		List<ShipManeuver> maneuvers = lab.maneuvers();
 		design.maneuver	(maneuvers.get(stackLevel(1, maneuvers.size()-1)));
-		// Scatter Pack X Rockets
-		design.weapon(0, new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:10"), false, 5, 7, 3.5f), rocketsCount());
-		// Stellar Converters
-		design.weapon(1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:20"), false), convertersCount());
-		// Plasma Torpedoes
-		design.weapon(2, new ShipWeaponTorpedo((TechTorpedoWeapon) tech("TorpedoWeapon:3")), torpedoesCount());
-		// Death rays
-		design.weapon(3, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:16"), false), 1);
+
+		design.weapon(0, lab.scatterPackXMissiles(x5), rocketsCount());
+		design.weapon(1, lab.stellarConverter(), convertersCount());
+		design.weapon(2, lab.plasmaTorpedoes(), torpedoesCount());
+		design.weapon(3, lab.deathRay(), 1);
 		
-		design.special(0, new ShipSpecialMissileShield((TechMissileShield)tech("MissileShield:3"))); // Lightning Shield
+		design.special(0, lab.specialLightningShield());		// Lightning Shield
 		float pFactor = options().aiProductionModifier();
 		if (pFactor > 1.4f)
-			design.special(1, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
+			design.special(1, lab.specialAdvDamControl());		// Advanced Damage control
 		else if (pFactor > 1.2f)
-			design.special(1, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:0"))); // Automated Repair System
-
-		// design.special(2, new ShipSpecialBlackHole((TechBlackHole)tech("BlackHole:0"))); // Black Hole Generator
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+			design.special(1, lab.specialAutomatedRepair());	// Automated Repair System
+		design.special(2, lab.specialResistStasis());			// Immune to Stasis
+		
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(attackLevel);
+		design.monsterBeamDefense(defense);
+		design.monsterEcmDefense(defense);
+		design.monsterInitiative(100);
+		
 		return design;
 	}
 	@Override protected ShipDesign designRotP()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		ShipDesign design = lab.newBlankDesign(-10000);
+		ShipDesign design = lab.newBlankDesign(4, stackLevel(10000));
 		design.mission	(ShipDesign.DESTROYER);
 
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(1, engines.size()-1)));
 
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int attackLevel = stackLevel(10);
+		design.computer	(computers.get(min(attackLevel, computers.size()-1)));
 
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
@@ -152,28 +148,28 @@ public class OrionGuardianShip extends GuardianMonsters {
 		design.shield	(shields.get(stackLevel(9, shields.size()-1)));
 
 		List<ShipECM> ecms = lab.ecms();
-		design.ecm		(ecms.get(stackLevel(9, ecms.size()-1)));
+		int defense = stackLevel(9, ecms.size()-1);
+		design.ecm	(ecms.get(defense));
 
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(1, maneuvers.size()-1)));
-		// Scatter Pack X Rockets
-		design.weapon(0, new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:10"), false, 5, 7, 3.5f), 85);
-		// Stellar Converters
-		design.weapon(1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:20"), false), 45);
-		// Plasma Torpedoes
-		design.weapon(2, new ShipWeaponTorpedo((TechTorpedoWeapon) tech("TorpedoWeapon:3")), 18);
-		// Death rays
-		design.weapon(3, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:16"), false), 1);
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(attackLevel);
+		design.monsterBeamDefense(defense);
+		design.monsterEcmDefense(defense);
+		design.monsterInitiative(100);
+
+		// BR: do not change this sequence... CombatStackOrionGuardian needs it this way
+		design.weapon(0, lab.scatterPackXMissiles(x5), stackLevel(85));
+		design.weapon(1, lab.stellarConverter(), stackLevel(45));
+		design.weapon(2, lab.plasmaTorpedoes(), stackLevel(18));
+		design.weapon(3, lab.deathRay(), 1);
 		
-		design.special(0, new ShipSpecialBeamFocus((TechBeamFocus)tech("BeamFocus:0"))); // High Energy Focus
-		design.special(1, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
-
-		// design.special(2, new ShipSpecialBlackHole((TechBlackHole)tech("BlackHole:0"))); // Black Hole Generator
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+		design.special(0, lab.specialZyroShield());
+		design.special(1, lab.specialHighEnergyFocus());	// High Energy Focus
+		design.special(2, lab.specialAdvDamControl());		// Advanced Damage control
+		design.special(3, lab.specialResistStasis());		// Immune to Stasis
+		
 		return design;
 	}
 }

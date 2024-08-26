@@ -56,7 +56,7 @@ AUTOREPAIR_1_NAME      | Advanced Damage Control
 AUTOREPAIR_1_BRIEF     | Heals 30% of ship's hits a turn
 AUTOREPAIR_1_DETAIL    | Undestroyed ships can repair up to 30% of their total hit points at the end of each turn.
 
-AUTOREPAIR_2_NAME      | Amoeba Damage Control
+AUTOREPAIR_2_NAME      | Max 500 Hits per turn
 AUTOREPAIR_2_BRIEF     | Limit damage to max 500 Hits per turn
 AUTOREPAIR_2_DETAIL    | Never take more than 500 damage per turn.
 
@@ -194,13 +194,20 @@ BLACKHOLE_0_DETAIL   | Creates a sub-space field that warps normal space, creati
 // Monster Special tech
 //
 SQUIDINK_0_NAME      | Squid Ink
+SQUIDINK_0_BRIEF     | Monster Special
 SQUIDINK_0_DETAIL    | Enveloping substance that destroys 10% to 30% of enemy ships.
 
 EATSHIPS_0_NAME      | Eat Ships
+EATSHIPS_0_BRIEF     | Monster Special
 EATSHIPS_0_DETAIL    | Can devour a full stack of spaceships.
 
-RESISTREPULSOR_0_NAME   | Resist Repulsors
-RESISTREPULSOR_0_DETAIL | Repulsors have no effects.
+RESISTSPECIAL_0_NAME   | Resist Repulsors
+RESISTSPECIAL_0_BRIEF  | Monster Special
+RESISTSPECIAL_0_DETAIL | Repulsors have no effects.
+
+RESISTSPECIAL_1_NAME   | Immune to Stasis
+RESISTSPECIAL_1_BRIEF  | Monster Special
+RESISTSPECIAL_1_DETAIL | Target are immune to the effects of a stasis field attack.
 
 
 //

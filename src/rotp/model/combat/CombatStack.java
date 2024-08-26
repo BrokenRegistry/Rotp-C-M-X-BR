@@ -53,7 +53,7 @@ public class CombatStack implements Base {
     public static final Color sysShieldC = new Color(128,128,0);
     public static final Color sysPopC = new Color(128,0,0);
     public static final Color sysFactoryC = new Color(0,0,128);
-    public Empire empire;
+    private Empire empire;
     public ShipCombatManager mgr;
     public ShipCaptain captain;
     public final List<CombatStackMissile> targetingMissiles = new ArrayList<>();
@@ -94,11 +94,12 @@ public class CombatStack implements Base {
     public boolean ally = true;
     public boolean visible = true;
     public float transparency = 1;
+
+    public Empire empire()               { return empire; }
+    public void empire(Empire emp)       { empire = emp; }
     public String destroyedSoundEffect() { return "ShipExplosion"; }
-    
-    public String shortString() {
-        return concat(toString()," at:", str(x), ",", str(y));
-    }
+    public String shortString() { return concat(toString()," at:", str(x), ",", str(y)); }
+
     public static Comparator<CombatStack> INITIATIVE = (CombatStack o1, CombatStack o2) -> Base.compare(o2.initiativeRank(), o1.initiativeRank());
 //    public CombatStack() { }
 //    public CombatStack(ShipCombatManager m, Empire c) {

@@ -1120,6 +1120,26 @@ public class GalaxyMapPanel extends BasePanel implements IMapOptions, ActionList
                 }
                 if (closestShip != null)
                     return closestShip;
+                List<SpaceMonster> monsters = new ArrayList<>(pl.visibleMonsters());
+                minDistance = Float.MAX_VALUE;
+                for (Ship sh: monsters) {
+                    if (sh.displayed()) {
+                        Sprite spr = (Sprite) sh;
+                        if (parent.shouldDrawSprite(spr)
+                        && spr.isSelectableAt(this, x1, y1)) {
+                            float dist = spr.selectDistance(this, x1, y1);
+                            if (dist == 0)
+                               return spr;
+                            if (dist < minDistance) {
+                                minDistance = dist;
+                                closestShip = spr;
+                            }
+                        }
+                    }
+                }
+                if (closestShip != null)
+                    return closestShip;
+
             }
         }
         if (!ctrlDown && parent.hoverOverSystems()) {

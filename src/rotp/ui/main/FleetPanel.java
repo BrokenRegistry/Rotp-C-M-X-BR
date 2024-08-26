@@ -41,6 +41,7 @@ import java.util.List;
 import rotp.model.Sprite;
 import rotp.model.empires.Empire;
 import rotp.model.galaxy.ShipFleet;
+import rotp.model.galaxy.SpaceMonster;
 import rotp.model.galaxy.StarSystem;
 import rotp.model.ships.ShipDesign;
 import rotp.model.ships.ShipDesignLab;
@@ -515,8 +516,19 @@ public class FleetPanel extends BasePanel implements MapSpriteViewer {
                 sys.planet().draw(g, w, h, s5, s70, s80*2, 45);
             }
             boolean contact = fl.empire().isPlayer() || pl.hasContacted(fl.empId());
+            SpaceMonster monster = null;
+            boolean isMonster = fl.empire().isMonster();
             // draw ship image
-            Image shipImg = contact ? fl.empire().race().transport() : pl.race().transport();
+            Image shipImg;
+            if (isMonster) {
+            	monster = (SpaceMonster) fl;
+            	shipImg = monster.image();
+            }
+            else if (contact)
+            	shipImg = fl.empire().race().transport();
+            else
+            	shipImg = pl.race().transport();
+
             int imgW = shipImg.getWidth(null);
             int imgH = shipImg.getHeight(null);
             float scale = (float) s80 / Math.max(imgW, imgH);
@@ -545,20 +557,20 @@ public class FleetPanel extends BasePanel implements MapSpriteViewer {
             // draw title
             g.setFont(narrowFont(36));
             String str1;
-            if (contact) {
+            if (isMonster)
+            	str1 = monster.name();
+            else if (contact) {
                 str1 = text("MAIN_FLEET_TITLE");
                 str1 = fl.empire().replaceTokens(str1, "fleet");
             }
             else 
                 str1 = text("MAIN_FLEET_TITLE_UNKNOWN");
             drawBorderedString(g, str1, 2, s15, s42, Color.black, SystemPanel.orangeText);
-
             // draw orbiting data, bottom up
             int y0 = h-s12;
             g.setColor(SystemPanel.whiteText);
             g.setFont(narrowFont(20));
-            if (fl.launched()
-            || (fl.deployed() && !pl.knowETA(fl))) {
+            if (fl.launched() || ( fl.deployed() && !pl.knowETA(fl) )) {
                 if (pl.knowETA(fl) && (fl.hasDestination())) {
                     String dest =  pl.sv.name(fl.destSysId());
                     String str2 = dest.isEmpty() ? text("MAIN_FLEET_DEST_UNSCOUTED") : text("MAIN_FLEET_DESTINATION", dest);
@@ -739,7 +751,9 @@ public class FleetPanel extends BasePanel implements MapSpriteViewer {
 
             clearButtons();
 
-            boolean sameFleet = (origFleet.empId() == displayFleet.empId()) && (origFleet.sysId() == displayFleet.sysId()) && (origFleet.destSysId() == displayFleet.destSysId());
+            boolean sameFleet = (origFleet.empId() == displayFleet.empId())
+			            		&& (origFleet.sysId() == displayFleet.sysId())
+			            		&& (origFleet.destSysId() == displayFleet.destSysId());
             boolean showAdjust = canAdjust && sameFleet;
 
             if (showAdjust)
@@ -890,7 +904,13 @@ public class FleetPanel extends BasePanel implements MapSpriteViewer {
                     rallyText = text("MAIN_FLEET_SET_RALLY");
                 }
                 if (player().knowETA(displayFl)) {
+                	
                     int dist = displayFl.travelTurnsRemainingAdjusted();
+//                    if (displayFl.empire().isMonster()) {
+//                    	dist = ((SpaceMonster)displayFl).event.targetTurnCount();
+//                    }
+//                    else
+//                    	dist = displayFl.travelTurnsRemainingAdjusted();
                     if (displayFl.hasDestination()) {
                         String destName = player().sv.name(displayFl.destSysId());
                         if (destName.isEmpty())
@@ -1004,7 +1024,9 @@ public class FleetPanel extends BasePanel implements MapSpriteViewer {
                     num++;
             }
             
-            boolean contact = origFl.empire().isPlayer() || player().hasContacted(origFl.empId());
+            boolean contact = origFl.empire().isPlayer() 
+            					|| origFl.empire().isMonster()
+            					|| player().hasContacted(origFl.empId());
             switch(num) {
                 case 0:
                     break;

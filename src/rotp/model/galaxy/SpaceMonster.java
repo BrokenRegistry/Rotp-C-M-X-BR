@@ -41,11 +41,15 @@ import rotp.ui.main.GalaxyMapPanel;
 
 public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	private static final long serialVersionUID = 1L;
+	protected static final boolean x2 = false;		// for missiles
+	protected static final boolean x5 = true;		// for missiles
+	protected static final boolean LIGHT = false;	// for beam Weapons
+	protected static final boolean HEAVY = true;	// for beam Weapons
 	protected final String nameKey;
 	protected int lastAttackerId;
 	private final List<Integer> path = new ArrayList<>();
 	public  float travelSpeed = 1f / (1.5f * max(1, 100.0f/galaxy().maxNumStarSystems()));
-	protected Float monsterLevel; // For non dynamic levels
+	private Float monsterLevel; // For non dynamic levels
 	private transient List<CombatStack> combatStacks = new ArrayList<>();
 	private transient BufferedImage shipImage;
 	public  IMonsterPos event;
@@ -68,12 +72,13 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	protected ShipDesign designMoO1()		{ return designRotP(); }
 	protected void initDesigns()			{
 		designs = new ShipDesign[ShipDesignLab.MAX_DESIGNS];
-		num(0, 1);
-		num(1, 0);
-		num(2, 0);
-		num(3, 0);
-		num(4, 0);
-		num(5, 0);
+		monsterLevel = null;
+		stackLevel	 = null;
+		stackLevel();
+		for (int i=0; i<ShipDesignLab.MAX_DESIGNS; i++)
+			num(i, 0);
+		int id = 0;
+		num(id, 1);
 		ShipDesign des;
 		if (options().isMoO1Monster())
 			des = designMoO1();
@@ -81,8 +86,8 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 			des = designRotP();
 		des.setImage(image());
 		des.name(text(nameKey));
-		designs[0] = des;
-
+		des.id(id);
+		designs[id] = des;
 	}
 
 	public Empire lastAttacker()			{ return galaxy().empire(lastAttackerId); }
@@ -116,7 +121,7 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	protected Float	 stackLevel()					{
 		if (stackLevel == null) {
 			if (monsterLevel == null) {
-				if (isGuardian() && system() != null) {
+				if (isFusionGuardian() && system() != null) {
 					stackLevel = options().guardianMonstersLevel() * system().monsterPlanetValue();
 					stackLevel = (float) Math.pow(stackLevel, 0.5);
 				}
@@ -126,18 +131,16 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 			else
 				stackLevel = monsterLevel;
 		}
+		monsterLevel = stackLevel;
 		return stackLevel;
 	}
 	protected int	 stackLevel(int val)			{ return (int) (val * stackLevel()); }
-	protected int	 stackLevel(int val, int max)	{
-		// System.out.print(Math.min(max, stackLevel(val)) + " ");
-		return Math.min(max, stackLevel(val)); }
-//	public ShipDesign design()						{ return null; }
-	@Override public String name()					{ return text(nameKey);  }
+	protected int	 stackLevel(int val, int max)	{ return Math.min(max, stackLevel(val)); }
+	@Override public String name()					{ return text(nameKey); }
 	@Override public IMappedObject source()			{ return this; }
 	@Override public void draw(GalaxyMapPanel map, Graphics2D g2)	{
-		if (isGuardian())
-			this.drawGuard(map, g2);
+		if (isOrionGuardian())
+			drawGuard(map, g2);
 
 		if (!displayed() || event==null) // TO DO BR: Uncomment
 			return;
@@ -154,6 +157,7 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		Point.Float	  pos = event.pos();
 		if (pos == null) {
 			System.out.println("Draw Monster Pos = null  " + nameKey);
+			pos = event.pos();
 			return;
 		}
 		BufferedImage img = getImage();
@@ -162,10 +166,18 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		int x = map.mapX(pos.x);
 		int y = map.mapY(pos.y);
 		
-		if (!hasDestination() || (destX() >= x()))
-			g2.drawImage(img, x-w/4, y-h/4, w, h, map);
-		else
-			g2.drawImage(img, x+w/2, y-h/4, -w, h, map);
+		if (!hasDestination() || (destX() >= x())) {
+			x -= w/4;
+			y -= h/4;
+			g2.drawImage(img, x, y, w, h, map);
+		}
+		else {
+			x += w/2;
+			y -= h/4;
+			g2.drawImage(img, x+w, y, -w, h, map);
+			
+//			g2.drawImage(img, x+w/2, y-h/4, -w, h, map);
+		}
 
 		int pad = BasePanel.s8;
 		selectBox().setBounds(x-pad,y-pad,w+pad+pad,h+pad+pad);
@@ -212,7 +224,9 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 	@Override public float	 travelSpeed()			{ return travelSpeed; }
 	@Override public boolean visibleTo(int empId)	{ return true; }
 	@Override public int	 empId()				{ return -2; }
-	@Override public boolean inTransit()			{ return !isGuardian(); }
+	@Override public boolean inTransit()			{ return !isOrionGuardian(); }
+	@Override public float	 transitX()				{ return fromX(); }
+	@Override public float	 transitY()				{ return fromY(); }
 	@Override public boolean deployed()				{ return false; }
 	@Override public int	 maxMapScale()			{ return GalaxyMapPanel.MAX_FLEET_HUGE_SCALE; }
 	@Override public boolean isArmed()				{ return true; }
@@ -228,7 +242,9 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
     @Override public Empire	 empire()            	{ return galaxy().orionEmpire(); }
     @Override protected ShipDesign[] designs()		{
 		// To allow the player to change the level in game.
+    	validate(); // BR: For backward compatibility.
 		int turn = galaxy().currentTurn();
+		designs = null; // TO DO BR: REMOVE
 		if (designs == null || designTurn != turn)			{
 			designTurn = turn;
 			clearFleetStats();
@@ -237,7 +253,8 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		return designs;
     }
 	@Override public ShipDesign design(int i)		{ return designs()[i]; }
-	@Override public StarSystem system()			{ return this.destination(); }
+	@Override public StarSystem system()			{ return destination(); }
+	@Override public void launch()					{ launch(fromX(), fromY()); }
 
 	public boolean alive()	{ 
 		boolean alive = false;
@@ -351,8 +368,8 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		}
 		return shipImage;
 	}
-	public boolean isMonsterGuardian()			{ return false; } // Not Orion Guardian
-	public boolean isGuardian()					{ return false; }
+	public boolean isFusionGuardian()			{ return false; } // Not Orion Guardian
+	public boolean isOrionGuardian()			{ return false; }
 	public SpaceMonster getCopy()				{ return null; } // For Amoeba
 	private void drawGuard(GalaxyMapPanel map, Graphics2D g2)	{
 		if (!displayed()) // TO DO BR: Uncomment
@@ -371,11 +388,11 @@ public abstract class SpaceMonster extends ShipFleet implements NamedObject {
 		BufferedImage img = getImage();
 		int w = img.getWidth();
 		int h = img.getHeight();
-		int x = map.mapX(pos.x);
-		int y = map.mapY(pos.y);
+		int x = map.mapX(pos.x)-w;
+		int y = map.mapY(pos.y)-h;
 		
 //		g2.drawImage(img, x-w/4, y-h/4, w, h, map);
-		g2.drawImage(img, x-w, y-h, w, h, map);
+		g2.drawImage(img, x, y, w, h, map);
 
 		int pad = BasePanel.s8;
 		selectBox().setBounds(x-pad,y-pad,w+pad+pad,h+pad+pad);

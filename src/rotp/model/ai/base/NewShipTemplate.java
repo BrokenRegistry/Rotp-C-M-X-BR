@@ -791,7 +791,7 @@ public class NewShipTemplate implements Base {
 
     public static float estimatedShipDamage(ShipDesign d, EnemyShipTarget target) {
         List<ShipSpecial> rangeSpecials = new ArrayList<>();
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             ShipSpecial sp = d.special(i);
             if (sp.allowsCloaking()
             || (sp.allowsTeleporting() && !target.hasInterdictors)

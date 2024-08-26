@@ -138,7 +138,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
     ShipTeleportButton shipTeleportButton = new ShipTeleportButton();
     ShipRetreatButton shipRetreatButton = new ShipRetreatButton();
     ShipWeaponButton[] shipWeaponButton = new ShipWeaponButton[ShipDesign.maxWeapons()];
-    ShipSpecialButton[] shipSpecialButton = new ShipSpecialButton[ShipDesign.maxSpecials()];
+    ShipSpecialButton[] shipSpecialButton = new ShipSpecialButton[ShipDesign.maxSpecials];
     Robot robot;
 
     Color[] redColors = new Color[3];
@@ -568,7 +568,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         else if (targetStack.inStasis) {
             
         }
-        else if (targetStack.isMonster() || (targetStack.empire != currentStack.empire)) {
+        else if (targetStack.isMonster() || (targetStack.empire() != currentStack.empire())) {
             int wpnI = 0;
             int spcI = 0;
             shipFireAllButton.reset();
@@ -591,21 +591,6 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         if (targetStack != null) {
             if (targetStack.isColony())
                 drawColonyButtonOverlay(g, (CombatStackColony) targetStack, shipActionButtons);
-            else if (targetStack.isNeutralShip()) { // modnar: add NeutralShip display
-            	System.out.println("drawNeutralShipButtonOverlay"); // TODO BR: REMOVE
-                drawNeutralShipButtonOverlay(g, targetStack, shipActionButtons);
-            }
-			else if (targetStack.isMonster() && !targetStack.isNeutralShip()) // modnar: separate Monster and NeutralShip
-				if (targetStack instanceof CombatStackMonster) {
-//	            	System.out.println("drawSpaceMonsterButtonOverlay"); // TODO BR: REMOVE
-	            	drawShipButtonOverlay(g, targetStack, shipActionButtons); // TODO BR: REMOVE
-					//drawSpaceMonsterButtonOverlay(g, targetStack, shipActionButtons);
-				}
-				else {
-//	            	System.out.println("drawMonsterButtonOverlay"); // TODO BR: REMOVE
-//	            	drawShipButtonOverlay(g, targetStack, shipActionButtons); // TODO BR: REMOVE
-					drawMonsterButtonOverlay(g, targetStack, shipActionButtons);
-				}
             else
                 drawShipButtonOverlay(g, targetStack, shipActionButtons);
         }
@@ -626,7 +611,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             quickButtons.add(new Rectangle(buttonX,buttonY,buttonW, buttonH));
         }
         
-        boolean friendly = target.empire.isPlayer();
+        boolean friendly = target.empire().isPlayer();
         boolean drawUpper = target.y > 3;
         boolean drawLeft = target.reversed ? target.x > 6 : target.x > 2;
         int buttonRows = (actions.size() + 1) / 2;
@@ -639,7 +624,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
 
         int numWeapons = target.numWeapons();
         int numSpecials = 1;  // Battle Scanner
-        if (target.empire.tech().subspaceInterdiction())
+        if (target.empire().tech().subspaceInterdiction())
             numSpecials++;
 
         overlayScanH = scaled(105); // space for title and combat stats
@@ -655,14 +640,14 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         shipButtonOverlay.setBounds(x, y, w, h);
 
         Color borderColor = friendlyBorderC;
-        if (target.empire != currentStack.empire)
+        if (target.empire() != currentStack.empire())
             borderColor = hostileBorderC;
         else if (target == currentStack)
             borderColor = currentBorderC;
 
         g.setColor(grayBackC);
         g.fill(shipButtonOverlay);
-        if (target.empire != currentStack.empire)
+        if (target.empire() != currentStack.empire())
             g.setColor(borderColor);
         else
             g.setColor(borderColor);
@@ -681,7 +666,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         String titleText;
         if (target == currentStack)
             titleText = text("SHIP_COMBAT_ALLY_COLONY");
-        else if (target.empire == currentStack.empire)
+        else if (target.empire() == currentStack.empire())
             titleText = text("SHIP_COMBAT_ALLY_COLONY");
         else
             titleText = text("SHIP_COMBAT_ENEMY_COLONY");
@@ -828,12 +813,12 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             g.setFont(narrowFont(12));
             g.setColor(textColor);
             drawString(g,lbl1, x1a,y2+s12);
-            val2 = target.empire.shipLab().specialBattleScanner().name();
+            val2 = target.empire().shipLab().specialBattleScanner().name();
             sw2 = g.getFontMetrics().stringWidth(val2);
             drawString(g,val2, x1+w1-sw2-s5, y2+s12);
             y2 += s13;
-            if (target.empire.tech().subspaceInterdiction()) {
-                val2 = target.empire.tech().topSubspaceInterdictorTech().name();
+            if (target.empire().tech().subspaceInterdiction()) {
+                val2 = target.empire().tech().topSubspaceInterdictorTech().name();
                 sw2 = g.getFontMetrics().stringWidth(val2);
                 drawString(g,val2, x1 + w1 - sw2 - s5, y2 + s12);
                 y2 += s13;
@@ -846,7 +831,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
     private void drawShipButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
         CombatStack currentStack = mgr.currentStack();
         
-        if (!currentStack.empire.isPlayer())
+        if (!currentStack.empire().isPlayer())
             actions.clear();
          
         Rectangle grid = combatGrids[target.x][target.y];
@@ -862,7 +847,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             quickButtons.add(new Rectangle(buttonX,buttonY,buttonW, buttonH));
         }
 
-        boolean friendly = currentStack.empire == target.empire;
+        boolean friendly = currentStack.empire() == target.empire();
         boolean drawUpper = target.y > 3;
         boolean drawLeft = target.reversed ? target.x > 6 : target.x > 2;
         int buttonRows = (actions.size()+1)/2;
@@ -892,7 +877,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         int x =  drawLeft ? grid.x - w : grid.x + grid.width;
 
         Color borderColor = friendlyBorderC;
-        if (target.empire != currentStack.empire)
+        if (target.empire() != currentStack.empire())
             borderColor = hostileBorderC;
         else if (target == currentStack)
             borderColor = currentBorderC;
@@ -900,7 +885,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         Rectangle shipOverlay = new Rectangle(x,y,w,h);
         g.setColor(grayBackC);
         g.fill(shipOverlay);
-        if (target.empire != currentStack.empire)
+        if (target.empire() != currentStack.empire())
             g.setColor(borderColor);
         else
             g.setColor(borderColor);
@@ -922,7 +907,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         String titleText;
         if (target == currentStack)
             titleText = text("SHIP_COMBAT_CURRENT_TARGET");
-        else if (target.empire == currentStack.empire)
+        else if (target.empire() == currentStack.empire())
             titleText = text("SHIP_COMBAT_ALLY_TARGET");
         else
             titleText = text("SHIP_COMBAT_ENEMY_TARGET");
@@ -1112,609 +1097,10 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             g.fillRect(x, y2+s5, w, s4);
         }
     }
-    private void drawMonsterButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
-        CombatStack currentStack = mgr.currentStack();
-        
-        if (currentStack.usingAI())
-            actions.clear();
-         
-        Rectangle grid = combatGrids[target.x][target.y];
-       
-        List<Rectangle> quickButtons = new ArrayList<>();
-        for (int i=0;i<actions.size();i++) {
-            int gridW = grid.width;
-            int gridH = grid.height;
-            int buttonW = gridW*9/20;
-            int buttonX = i%2==0 ? grid.x+(gridW/20) : grid.x+(gridW*10/20);
-            int buttonH = (gridH-s21)/4;
-            int buttonY = grid.y+s6+(((i/2)%4)*(buttonH+s3));
-            quickButtons.add(new Rectangle(buttonX,buttonY,buttonW, buttonH));
-        }
-
-        boolean drawUpper = target.y > 5;
-        boolean drawLeft = target.reversed ? target.x > 6 : target.x > 2;
-        int buttonRows = (actions.size()+1)/2;
-        int buttonH = s25;
-        int buttonGap = s5;
-        int overlayHeaderH = actions.isEmpty() ? s10 : s30;
-        int overlayButtonH = buttonRows*(buttonH+buttonGap);
-        int overlayFooterH = 0;
-        int overlayScanH = s76;
-
-        int w = grid.width+grid.width+s100+s20;
-        int h = overlayHeaderH+overlayButtonH+overlayScanH+overlayFooterH;
-        int y = drawUpper ? grid.y + grid.height - h - (grid.height/5) : grid.y + (grid.height/5);
-        int x =  drawLeft ? grid.x - w : grid.x + grid.width;
-
-        Color borderColor = hostileBorderC;
-
-        Rectangle shipOverlay = new Rectangle(x,y,w,h);
-        g.setColor(grayBackC);
-        g.fill(shipOverlay);
-        g.setColor(borderColor);
-        Stroke prev = g.getStroke();
-        g.setStroke(stroke7);
-        g.setClip(shipOverlay);
-        g.draw(shipOverlay);
-        g.setClip(null);
-        g.setStroke(stroke2);
-        Rectangle r = combatGrids[target.x][target.y];
-        g.drawRect(r.x+s1,r.y+s1, r.width-s1,r.height-s1);
-        g.setStroke(prev);
-
-
-        int x0 = x+s10;
-        int y0 = drawUpper? y+overlayScanH: y+s20;
-
-        // draw ship info and action buttons
-        String titleText = text("SHIP_COMBAT_MONSTER_TARGET");
-        g.setFont(narrowFont(14));
-        g.setColor(SystemPanel.blackText);
-        drawString(g,titleText, x0, y0);
-
-        int y1 = y0+s20;
-        if (!actions.isEmpty()) {
-            String line;
-            if (actions.size() == 1)
-                line = text("SHIP_COMBAT_FIRE_WEAPON");
-            else
-                line = text("SHIP_COMBAT_SELECT_WEAPON");
-            g.setFont(narrowFont(20));
-            drawShadowedString(g,line,3, x0,y1, SystemPanel.textShadowC, SystemPanel.whiteText);
-            y1 += s10;
-            for (int i=0;i<actions.size();i++) {
-                boolean isLeftColumn = i%2 == 0;
-                int x1 = isLeftColumn ? x+s10 : x+(w/2);
-                int w1 = (w-s20-s5)/2;
-                actions.get(i).draw(g,currentStack, target, isLeftColumn, x1, y1, w1, buttonH, actions.size(), quickButtons.get(i));
-                if (i%2 == 1)
-                    y1 = y1+buttonH+buttonGap;
-            }
-        }
-
-        shipButtonOverlay.setBounds(x,y0-s20,w,overlayHeaderH+overlayButtonH+s20);
-        int x2 = x+s10;
-        int y2 = drawUpper ? y+s25 : y+s20+overlayHeaderH+overlayButtonH;
-
-        // draw scan info
-
-        if (!drawUpper) {
-            g.setColor(borderColor);
-            g.fillRect(x, y2, w, s4);
-            y2 += s25;
-        }
-        String scanTitle = text("SHIP_COMBAT_SCAN_LABEL");
-        g.setFont(narrowFont(20));
-        drawShadowedString(g, scanTitle, 3, x2, y2, SystemPanel.textShadowC, SystemPanel.whiteText);
-
-        y2 += s10;
-        //int y2a = y2;
-        int x1 = x+s4;
-        int w1 = w-s8;
-        int x1a = x1+s4;
-        int x1b = x1 + (w1/2)+s8;
-        Color textColor = SystemPanel.blackText;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        String unk = text("SHIP_COMBAT_SCAN_UNSCANNED_VALUE");
-
-        g.setFont(narrowFont(12));
-        String lbl1 = text("SHIP_COMBAT_SCAN_HIT_POINTS");
-        String lbl2 = text("SHIP_COMBAT_SCAN_SPEED");
-        int currHits = (int) Math.ceil(target.hits());
-        int maxHits = (int) target.maxStackHits();
-        String val1 = currHits == maxHits ? "" + maxHits : ""+currHits+"/"+maxHits;
-        String val2 = target.maxMove == 0 ? unk : str((int)target.maxMove);
-        int sw1 = g.getFontMetrics().stringWidth(val1);
-        int sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-    }
-	
-	// modnar: add drawNeutralShipButtonOverlay for Neutral Ships
-	// currently only for SpacePirates
-	// so ideally should make CombatStackNeutralShip and have CombatStackSpacePirates extend that
-    private void drawNeutralShipButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
-        CombatStack currentStack = mgr.currentStack();
-		
-		CombatStackSpacePirates pirateStack = (CombatStackSpacePirates)target;
-        
-        if (currentStack.usingAI())
-            actions.clear();
-         
-        Rectangle grid = combatGrids[target.x][target.y];
-        int gridW = grid.width;
-        int gridH = grid.height;
-        int buttonW = gridW*9/20;
-        int buttonH = (gridH-s21)/4;
-       
-        List<Rectangle> quickButtons = new ArrayList<>();
-        for (int i=0;i<actions.size();i++) {
-            int buttonX = i%2==0 ? grid.x+(gridW/20) : grid.x+(gridW*10/20);
-            int buttonY = grid.y+s6+(((i/2)%4)*(buttonH+s3));
-            quickButtons.add(new Rectangle(buttonX,buttonY,buttonW, buttonH));
-        }
-
-        boolean drawUpper = target.y > 5;
-        boolean drawLeft = target.reversed ? target.x > 6 : target.x > 2;
-        int buttonRows = (actions.size()+1)/2;
-        buttonH = s25;
-        int buttonGap = s5;
-        int overlayHeaderH = actions.isEmpty() ? s10 : s30;
-        int overlayButtonH = buttonRows*(buttonH+buttonGap);
-        int overlayFooterH = 0;
-        int overlayScanH = 0;
-
-        // modnar: always scanned
-		overlayScanH = s100+s5; // space for title and combat stats
-		if (pirateStack.weapons.size() != 0) {
-			overlayScanH += s8;
-			overlayScanH += (pirateStack.weapons.size() * s13);
-		}
-		if (pirateStack.specials.size() != 0) {
-			overlayScanH += s8;
-			overlayScanH += (pirateStack.specials.size() * s13);
-		}
-
-        int w = grid.width+grid.width+s100+s20;
-        int h = overlayHeaderH+overlayButtonH+overlayScanH+overlayFooterH;
-        int y = drawUpper ? grid.y + grid.height - h - (grid.height/5) : grid.y + (grid.height/5);
-        int x =  drawLeft ? grid.x - w : grid.x + grid.width;
-
-        Color borderColor = hostileBorderC;
-
-        Rectangle shipOverlay = new Rectangle(x,y,w,h);
-        g.setColor(grayBackC);
-        g.fill(shipOverlay);
-        g.setColor(borderColor);
-        Stroke prev = g.getStroke();
-        g.setStroke(stroke7);
-        g.setClip(shipOverlay);
-        g.draw(shipOverlay);
-        g.setClip(null);
-        g.setStroke(stroke2);
-        Rectangle r = combatGrids[target.x][target.y];
-        g.drawRect(r.x+s1,r.y+s1, r.width-s1,r.height-s1);
-        g.setStroke(prev);
-
-
-        int x0 = x+s10;
-        int y0 = drawUpper? y+overlayScanH: y+s20;
-
-        // draw ship info and action buttons
-        String titleText = text("SHIP_COMBAT_PIRATES_TARGET");
-        g.setFont(narrowFont(14));
-        g.setColor(SystemPanel.blackText);
-        drawString(g,titleText, x0, y0);
-
-        int y1 = y0+s20;
-        if (!actions.isEmpty()) {
-            String line;
-            if (actions.size() == 1)
-                line = text("SHIP_COMBAT_FIRE_WEAPON");
-            else
-                line = text("SHIP_COMBAT_SELECT_WEAPON");
-            g.setFont(narrowFont(20));
-            drawShadowedString(g,line,3, x0,y1, SystemPanel.textShadowC, SystemPanel.whiteText);
-            y1 += s10;
-            for (int i=0;i<actions.size();i++) {
-                boolean isLeftColumn = i%2 == 0;
-                int x1 = isLeftColumn ? x+s10 : x+(w/2);
-                int w1 = (w-s20-s5)/2;
-                actions.get(i).draw(g,currentStack, target, isLeftColumn, x1, y1, w1, buttonH, actions.size(), quickButtons.get(i));
-                if (i%2 == 1)
-                    y1 = y1+buttonH+buttonGap;
-            }
-        }
-
-        shipButtonOverlay.setBounds(x,y0-s20,w,overlayHeaderH+overlayButtonH+s20);
-
-        //if (view == null) // modnar: always scanned
-        //    return;
-
-        int x2 = x+s10;
-        int y2 = drawUpper ? y+s25 : y+s20+overlayHeaderH+overlayButtonH;
-
-        // draw scan info
-
-        if (!drawUpper) {
-            g.setColor(borderColor);
-            g.fillRect(x, y2, w, s4);
-            y2 += s25;
-        }
-        String scanTitle = text("SHIP_COMBAT_SCAN_LABEL");
-        g.setFont(narrowFont(20));
-        drawShadowedString(g, scanTitle, 3, x2, y2, SystemPanel.textShadowC, SystemPanel.whiteText);
-
-        y2 += s10;
-        int y2a = y2;
-        int x1 = x+s4;
-        int w1 = w-s8;
-        int x1a = x1+s4;
-        int x1b = x1 + (w1/2)+s8;
-        Color textColor = SystemPanel.blackText;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        // String unk = text("SHIP_COMBAT_SCAN_UNSCANNED_VALUE");
-
-        g.setFont(narrowFont(12));
-        String lbl1 = text("SHIP_COMBAT_SCAN_HIT_POINTS");
-        String lbl2 = text("SHIP_COMBAT_SCAN_SHIELD_CLASS");
-        int currHits = (int) Math.ceil(pirateStack.hits());
-        int maxHits = (int) Math.ceil(pirateStack.maxStackHits());
-        String val1 = currHits == maxHits ? "" + maxHits : ""+currHits+"/"+maxHits;
-        String val2 = ""+pirateStack.shield;
-        int sw1 = g.getFontMetrics().stringWidth(val1);
-        int sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        lbl1 = text("SHIP_COMBAT_SCAN_MISSILE_DEF");
-        lbl2 = text("SHIP_COMBAT_SCAN_ATTACK_LEVEL");
-        g.setFont(narrowFont(12));
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        val1 = ""+pirateStack.missileDefense;
-        val2 = ""+pirateStack.attackLevel;
-        sw1 = g.getFontMetrics().stringWidth(val1);
-        sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        lbl1 = text("SHIP_COMBAT_SCAN_BEAM_DEF");
-        lbl2 = text("SHIP_COMBAT_SCAN_SPEED");
-        g.setFont(narrowFont(12));
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        val1 = ""+pirateStack.beamDefense;
-        val2 = ""+pirateStack.maxMove;
-        sw1 = g.getFontMetrics().stringWidth(val1);
-        sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        g.setColor(lineColor);
-        g.fillRect(x1+(w/2),y2a,s1,y2-y2a);
-
-        if (!pirateStack.weapons.isEmpty()) {
-            y2 += s3;
-            lbl1 = text("SHIP_COMBAT_SCAN_WEAPONS");
-            g.setFont(narrowFont(12));
-            g.setColor(textColor);
-            drawString(g,lbl1, x1a,y2+s12);
-            List<ShipComponent> wpns = pirateStack.weapons;
-            for (int i=0; i<pirateStack.weapons.size(); i++) {
-                int num = pirateStack.weaponCount[i];
-                if (num > 0) {
-                    ShipComponent wpn = wpns.get(i);
-                    val2 = text("SHIP_COMBAT_SCAN_WEAPON_CNT", str(num), wpn.name());
-                    sw2 = g.getFontMetrics().stringWidth(val2);
-                    drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-                    y2 += s13;
-                }
-            }
-            y2 += s5;
-            g.setColor(lineColor);
-            g.fillRect(x1,y2,w1,s1);
-        }
-
-		if (!pirateStack.specials.isEmpty()) {
-            y2 += s3;
-            lbl1 = text("SHIP_COMBAT_SCAN_DEVICES");
-            g.setFont(narrowFont(12));
-            g.setColor(textColor);
-            drawString(g,lbl1, x1a,y2+s12);
-            List<ShipSpecial> specials = pirateStack.specials;
-            for (int i=0; i<pirateStack.specials.size(); i++) {
-                ShipSpecial spec = specials.get(i);
-                val2 = spec.name();
-                sw2 = g.getFontMetrics().stringWidth(val2);
-                drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-                y2 += s13;
-            }
-            y2 += s5;
-            g.setColor(lineColor);
-            g.fillRect(x1,y2,w1,s1);
-        }
-
-        // draw dividing line
-        if (drawUpper) {
-            g.setColor(borderColor);
-            g.fillRect(x, y2+s5, w, s4);
-        }
-    }
-	// BR: add drawMonsterShipButtonOverlay for Space Guardian Ships
-/*    private void drawSpaceMonsterButtonOverlay(Graphics2D g, CombatStack target, List<ShipActionButton> actions) {
-        CombatStack currentStack = mgr.currentStack();
-		
-		CombatStackMonster monsterStack = (CombatStackMonster)target;
-        
-        if (currentStack.usingAI())
-            actions.clear();
-         
-        Rectangle grid = combatGrids[target.x][target.y];
-        int gridW = grid.width;
-        int gridH = grid.height;
-        int buttonW = gridW*9/20;
-        int buttonH = (gridH-s21)/4;
-       
-        List<Rectangle> quickButtons = new ArrayList<>();
-        for (int i=0;i<actions.size();i++) {
-            int buttonX = i%2==0 ? grid.x+(gridW/20) : grid.x+(gridW*10/20);
-            int buttonY = grid.y+s6+(((i/2)%4)*(buttonH+s3));
-            quickButtons.add(new Rectangle(buttonX,buttonY,buttonW, buttonH));
-        }
-
-        boolean drawUpper = target.y > 5;
-        boolean drawLeft = target.reversed ? target.x > 6 : target.x > 2;
-        int buttonRows = (actions.size()+1)/2;
-        buttonH = s25;
-        int buttonGap = s5;
-        int overlayHeaderH = actions.isEmpty() ? s10 : s30;
-        int overlayButtonH = buttonRows*(buttonH+buttonGap);
-        int overlayFooterH = 0;
-        int overlayScanH = 0;
-
-        // modnar: always scanned
-		overlayScanH = s100+s5; // space for title and combat stats
-		if (monsterStack.weapons.size() != 0) {
-			overlayScanH += s8;
-			overlayScanH += (monsterStack.weapons.size() * s13);
-		}
-//		if (monsterStack.specials.size() != 0) {
-//			overlayScanH += s8;
-//			overlayScanH += (monsterStack.specials.size() * s13);
-//		}
-
-        int w = grid.width+grid.width+s100+s20;
-        int h = overlayHeaderH+overlayButtonH+overlayScanH+overlayFooterH;
-        int y = drawUpper ? grid.y + grid.height - h - (grid.height/5) : grid.y + (grid.height/5);
-        int x =  drawLeft ? grid.x - w : grid.x + grid.width;
-
-        Color borderColor = hostileBorderC;
-
-        Rectangle shipOverlay = new Rectangle(x,y,w,h);
-        g.setColor(grayBackC);
-        g.fill(shipOverlay);
-        g.setColor(borderColor);
-        Stroke prev = g.getStroke();
-        g.setStroke(stroke7);
-        g.setClip(shipOverlay);
-        g.draw(shipOverlay);
-        g.setClip(null);
-        g.setStroke(stroke2);
-        Rectangle r = combatGrids[target.x][target.y];
-        g.drawRect(r.x+s1,r.y+s1, r.width-s1,r.height-s1);
-        g.setStroke(prev);
-
-
-        int x0 = x+s10;
-        int y0 = drawUpper? y+overlayScanH: y+s20;
-
-        // draw ship info and action buttons
-        String titleText = text("SHIP_COMBAT_MONSTER_TARGET");
-        g.setFont(narrowFont(14));
-        g.setColor(SystemPanel.blackText);
-        drawString(g,titleText, x0, y0);
-
-        int y1 = y0+s20;
-        if (!actions.isEmpty()) {
-            String line;
-            if (actions.size() == 1)
-                line = text("SHIP_COMBAT_FIRE_WEAPON");
-            else
-                line = text("SHIP_COMBAT_SELECT_WEAPON");
-            g.setFont(narrowFont(20));
-            drawShadowedString(g,line,3, x0,y1, SystemPanel.textShadowC, SystemPanel.whiteText);
-            y1 += s10;
-            for (int i=0;i<actions.size();i++) {
-                boolean isLeftColumn = i%2 == 0;
-                int x1 = isLeftColumn ? x+s10 : x+(w/2);
-                int w1 = (w-s20-s5)/2;
-                actions.get(i).draw(g,currentStack, target, isLeftColumn, x1, y1, w1, buttonH, actions.size(), quickButtons.get(i));
-                if (i%2 == 1)
-                    y1 = y1+buttonH+buttonGap;
-            }
-        }
-
-        shipButtonOverlay.setBounds(x,y0-s20,w,overlayHeaderH+overlayButtonH+s20);
-
-        //if (view == null) // modnar: always scanned
-        //    return;
-
-        int x2 = x+s10;
-        int y2 = drawUpper ? y+s25 : y+s20+overlayHeaderH+overlayButtonH;
-
-        // draw scan info
-
-        if (!drawUpper) {
-            g.setColor(borderColor);
-            g.fillRect(x, y2, w, s4);
-            y2 += s25;
-        }
-        String scanTitle = text("SHIP_COMBAT_SCAN_LABEL");
-        g.setFont(narrowFont(20));
-        drawShadowedString(g, scanTitle, 3, x2, y2, SystemPanel.textShadowC, SystemPanel.whiteText);
-
-        y2 += s10;
-        int y2a = y2;
-        int x1 = x+s4;
-        int w1 = w-s8;
-        int x1a = x1+s4;
-        int x1b = x1 + (w1/2)+s8;
-        Color textColor = SystemPanel.blackText;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        // String unk = text("SHIP_COMBAT_SCAN_UNSCANNED_VALUE");
-
-        g.setFont(narrowFont(12));
-        String lbl1 = text("SHIP_COMBAT_SCAN_HIT_POINTS");
-        String lbl2 = text("SHIP_COMBAT_SCAN_SHIELD_CLASS");
-        int currHits = (int) Math.ceil(monsterStack.hits());
-        int maxHits = (int) Math.ceil(monsterStack.maxStackHits());
-        String val1 = currHits == maxHits ? "" + maxHits : ""+currHits+"/"+maxHits;
-        String val2 = ""+monsterStack.shield;
-        int sw1 = g.getFontMetrics().stringWidth(val1);
-        int sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        lbl1 = text("SHIP_COMBAT_SCAN_MISSILE_DEF");
-        lbl2 = text("SHIP_COMBAT_SCAN_ATTACK_LEVEL");
-        g.setFont(narrowFont(12));
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        val1 = ""+monsterStack.missileDefense;
-        val2 = ""+monsterStack.attackLevel;
-        sw1 = g.getFontMetrics().stringWidth(val1);
-        sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        lbl1 = text("SHIP_COMBAT_SCAN_BEAM_DEF");
-        lbl2 = text("SHIP_COMBAT_SCAN_SPEED");
-        g.setFont(narrowFont(12));
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        val1 = ""+monsterStack.beamDefense;
-        val2 = ""+monsterStack.maxMove;
-        sw1 = g.getFontMetrics().stringWidth(val1);
-        sw2 = g.getFontMetrics().stringWidth(val2);
-        g.setColor(textColor);
-        drawString(g,lbl1, x1a,y2+s12);
-        drawString(g,val1, x1b-s10-sw1, y2+s12);
-        drawString(g,lbl2, x1b,y2+s12);
-        drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-
-        y2 += s15;
-        g.setColor(lineColor);
-        g.fillRect(x1,y2,w1,s1);
-
-        g.setColor(lineColor);
-        g.fillRect(x1+(w/2),y2a,s1,y2-y2a);
-
-        if (!monsterStack.weapons.isEmpty()) {
-            y2 += s3;
-            lbl1 = text("SHIP_COMBAT_SCAN_WEAPONS");
-            g.setFont(narrowFont(12));
-            g.setColor(textColor);
-            drawString(g,lbl1, x1a,y2+s12);
-            List<ShipComponent> wpns = monsterStack.weapons;
-            for (int i=0; i<monsterStack.weapons.size(); i++) {
-                int num = monsterStack.weaponCount[i];
-                if (num > 0) {
-                    ShipComponent wpn = wpns.get(i);
-                    val2 = text("SHIP_COMBAT_SCAN_WEAPON_CNT", str(num), wpn.name());
-                    sw2 = g.getFontMetrics().stringWidth(val2);
-                    drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-                    y2 += s13;
-                }
-            }
-            y2 += s5;
-            g.setColor(lineColor);
-            g.fillRect(x1,y2,w1,s1);
-        }
-
-//		if (!monsterStack.specials.isEmpty()) {
-//            y2 += s3;
-//            lbl1 = text("SHIP_COMBAT_SCAN_DEVICES");
-//            g.setFont(narrowFont(12));
-//            g.setColor(textColor);
-//            drawString(g,lbl1, x1a,y2+s12);
-//            List<ShipSpecial> specials = monsterStack.specials;
-//            for (int i=0; i<monsterStack.specials.size(); i++) {
-//                ShipSpecial spec = specials.get(i);
-//                val2 = spec.name();
-//                sw2 = g.getFontMetrics().stringWidth(val2);
-//                drawString(g,val2, x1+w1-sw2-s5, y2+s12);
-//                y2 += s13;
-//            }
-//            y2 += s5;
-//            g.setColor(lineColor);
-//            g.fillRect(x1,y2,w1,s1);
-//        }
-
-        // draw dividing line
-        if (drawUpper) {
-            g.setColor(borderColor);
-            g.fillRect(x, y2+s5, w, s4);
-        }
-    } */
 	
     private void paintTravelPathToImage(Graphics2D g, CombatStack stack, int hoveringX, int hoveringY) {
         if (mgr.autoComplete || mgr.performingStackTurn)
             return;
- // BR:      if (mode == Display.RESULT)
         if (readyToShowResult())
            return;
         if (stack.usingAI())
@@ -1861,7 +1247,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
     private void drawStack(Graphics2D g, CombatStack st, int x, int y, int w, int h) {
         if (st.isShip()) {
             CombatStackShip sh = (CombatStackShip) st;
-            ShipDesign d = sh.design;
+            ShipDesign d = sh.design();
             int count = counts.containsKey(d) ? counts.get(d) : 0;
             if (count > 0)
                 sh.drawStack(this, g, count, x, y, w, h, 0);
@@ -1983,8 +1369,8 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         drawString(g,prompt, x1, y1); 
         
         Empire victor = mgr.results().victor();
-        Empire colonyEmp = mgr.results().colonyStack == null ? null : mgr.results().colonyStack.empire;
-        // left empire
+        Empire colonyEmp = mgr.results().colonyStack == null ? null : mgr.results().colonyStack.empire();
+        // left empire()
         String empName = leftEmpire.name();
         
         int x2 = x0;
@@ -2026,7 +1412,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
             drawPlanetResult(g, sysName, false, x2+s20, y2+s80+(rows*shipBoxH), shipH);
         }
         
-        // right empire
+        // right empire()
         if (monster != null)
             empName = monster.name();
         else
@@ -2254,7 +1640,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
     private void retreatStack(CombatStack stack, boolean inCombat) {
         if (mgr.combatIsFinished() || mgr.autoResolve)
             return; 
-        if (!stack.canRetreat() || !stack.empire.isPlayerControlled())
+        if (!stack.canRetreat() || !stack.empire().isPlayerControlled())
             return;
         StarSystem dest = player().ai().shipCaptain().retreatSystem(mgr.system());
         mgr.retreatStack((CombatStackShip)stack, dest);
@@ -2980,7 +2366,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         Map<ShipDesign,Integer> destroyed = mgr.results().shipsDestroyed();
         Map<ShipDesign,Integer> retreated = mgr.results().shipsRetreated();
         Empire victor	 = mgr.results().victor();
-        Empire colonyEmp = mgr.results().colonyStack == null ? null : mgr.results().colonyStack.empire;
+        Empire colonyEmp = mgr.results().colonyStack == null ? null : mgr.results().colonyStack.empire();
 
         String message;
         if (sysName.isEmpty()) 
@@ -2988,7 +2374,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         else
         	message = text("SHIP_COMBAT_TITLE", sysName);
 
-        // left empire
+        // left empire()
         String empName = leftEmpire.name();
         message += NEWLINE + "Player: " + empName;
         if (leftEmpire == victor)
@@ -3006,7 +2392,7 @@ public class ShipBattleUI extends FadeInPanel implements MouseListener, MouseMot
         if (colonyEmp == leftEmpire)
             message += NEWLINE + drawPlanetResult(sysName);
         
-        // right empire
+        // right empire()
         if (monster != null)
             empName = monster.name();
         else

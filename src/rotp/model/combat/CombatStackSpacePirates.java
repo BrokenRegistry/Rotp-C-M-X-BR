@@ -122,7 +122,7 @@ public class CombatStackSpacePirates extends CombatStack {
 			maxShield = shield = 2.0f;
 			specials.add(new ShipSpecialScanner((TechScanner)tech("Scanner:0"))); // battle scanner
 			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:1"), false)); // gatling laser
-			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:2"), false)); // npg
+			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:2"), false)); // neutron pellet gun
 			weapons.add(new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:1"), false, 5, 5, 2.5f)); // hyper-v missiles
 			weapons.add(new ShipWeaponBomb((TechBombWeapon) tech("BombWeapon:1"))); // fusion bombs
 			weaponCount[0] = (int)Math.round(weaponScale*3);
@@ -211,7 +211,7 @@ public class CombatStackSpacePirates extends CombatStack {
 			specials.add(new ShipSpecialScanner((TechScanner)tech("Scanner:0"))); // battle scanner
 			specials.add(new ShipSpecialInertial((TechShipInertial)tech("ShipInertial:0"))); // inertial stabilizer
 			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:7"), false)); // hard beam
-			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:8"), true)); // heavy fusion blaster
+			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:8"), true)); // heavy fusion beam
 			weapons.add(new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:5"), false, 5, 7, 3.5f)); // stinger missiles
 			weapons.add(new ShipWeaponBomb((TechBombWeapon) tech("BombWeapon:3"))); // omega-v bombs
 			weaponCount[0] = (int)Math.round(weaponScale*5);
@@ -304,9 +304,9 @@ public class CombatStackSpacePirates extends CombatStack {
 			specials.add(new ShipSpecialScanner((TechScanner)tech("Scanner:0"))); // battle scanner
 			specials.add(new ShipSpecialInertial((TechShipInertial)tech("ShipInertial:0"))); // inertial stabilizer
 			specials.add(new ShipSpecialBeamFocus((TechBeamFocus)tech("BeamFocus:0"))); // high energy focus
-			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:13"), false)); // gauss auto-cannon
+			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:13"), false)); // Gauss auto-cannon
 			weapons.add(new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:17"), false)); // disruptor
-			weapons.add(new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:8"), false, 5, 9, 4.5f)); // hercular missiles
+			weapons.add(new ShipWeaponMissile((TechMissileWeapon) tech("MissileWeapon:8"), false, 5, 9, 4.5f)); // Hercular missiles
 			weapons.add(new ShipWeaponBomb((TechBombWeapon) tech("BombWeapon:4"))); // neutronium bombs
 			weaponCount[0] = (int)Math.round(weaponScale*8);
 			weaponCount[1] = (int)Math.round(weaponScale*10);

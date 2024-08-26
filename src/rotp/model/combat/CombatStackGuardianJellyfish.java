@@ -23,10 +23,8 @@ import rotp.model.galaxy.SpaceMonster;
 //Now named SpaceJellyfish
 public class CombatStackGuardianJellyfish extends CombatStackMonster {
 
-	public CombatStackGuardianJellyfish(SpaceMonster fl, String imageKey, Float monsterLevel, int designId) {
-		super(fl, imageKey, monsterLevel, designId, true);
+	public CombatStackGuardianJellyfish(SpaceMonster fl, String imageKey, Float monsterLevel, int designId, Color shieldC) {
+		super(fl, imageKey, monsterLevel, designId, true, shieldC);
 	}
-	@Override public boolean immuneToStasis()					{ return true; }
 	@Override public Color	 shieldBaseColor()					{ return Color.blue; }
-	@Override public int	 optimalFiringRange(CombatStack tgt){ return 2; }
 }

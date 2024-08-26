@@ -201,7 +201,10 @@ public final class RacesDiplomacyUI extends BasePanel implements MouseListener, 
         int w1 = scaled(279);
 
         drawRaceIconBase(g, emp, s55, s25, s210, s210);
-        drawAIBaseInfo(g, emp, s260, s80, s370, scaled(152));
+        if (emp.lastCouncilVoteEmpId() == Empire.NULL_ID)
+            drawAIBaseInfo(g, emp, s260, s80, s370, scaled(152));
+        else
+        	drawAIBaseInfo(g, emp, s260, s60, s370, scaled(172));
         drawRelationsMeter(g, emp, x0, s245, w0, s40);
         drawAIDiplomaticEvents(g, emp, x0, s295, w0, h-s295-s10);
         drawAIDiplomacyBureau(g, emp, x1, s10, w1, s135);
@@ -210,7 +213,10 @@ public final class RacesDiplomacyUI extends BasePanel implements MouseListener, 
         if (UserPreferences.texturesInterface()) 
             drawTexture(g,0,0,w,h);
         drawRaceIcon(g, emp, s60, s30, s200, s200);
-        drawEmpireName(g, emp, s260, s30, s370, s50);
+        if (emp.lastCouncilVoteEmpId() == Empire.NULL_ID)
+        	drawEmpireName(g, emp, s260, s30, s370, s50);
+        else
+        	drawEmpireName(g, emp, s260, s15, s370, s50);
     }
     private void drawRaceIconBase(Graphics2D g, Empire emp, int x, int y, int w, int h) {
         g.setColor(RacesUI.darkBrown);
@@ -292,13 +298,15 @@ public final class RacesDiplomacyUI extends BasePanel implements MouseListener, 
     private void drawAIBaseInfo(Graphics2D g, Empire emp, int x, int y, int w, int h) {
         g.setColor(RacesUI.darkBrown);
         g.fillRect(x, y, w, h);
-
-        int lineH = s30;
+        int lastVote = emp.lastCouncilVoteEmpId();
+        boolean hasVoted = lastVote != Empire.NULL_ID;
+        int lineH = hasVoted? s28 : s30;
         int y1 = y+lineH-s5;
         int y2 = y1+lineH;
         int y3 = y2+lineH;
         int y4 = y3+lineH;
         int y5 = y4+lineH;
+        int y6 = hasVoted? (y5+lineH) : y5;
         int x0 = x+s20;
         g.setFont(narrowFont(22));
         Color textC = SystemPanel.whiteText;
@@ -306,9 +314,11 @@ public final class RacesDiplomacyUI extends BasePanel implements MouseListener, 
         drawShadowedString(g, text("RACES_DIPLOMACY_LEADER"), 1, x0, y2, SystemPanel.blackText, textC);
         drawShadowedString(g, text("RACES_DIPLOMACY_CHARACTER"), 1, x0, y3, SystemPanel.blackText, textC);
         drawShadowedString(g, text("RACES_DIPLOMACY_STATUS"), 1, x0, y4, SystemPanel.blackText, textC);
+        if (hasVoted)
+        	drawShadowedString(g, text("RACES_DIPLOMACY_LAST_VOTE"), 1, x0, y5, SystemPanel.blackText, textC);
         // drawShadowedString(g, text("RACES_DIPLOMACY_ABILITY"), 1, x0, y5, SystemPanel.blackText, textC);
         if (options().allowSpeciesDetails())
-        	drawShowAbilitiesButton(g, x0-s10,y5-s15,s20,s22);
+        	drawShowAbilitiesButton(g, x0-s10,y6-s15,s20,s22);
 
         g.setFont(narrowFont(20));
         g.setColor(SystemPanel.blackText);
@@ -339,6 +349,17 @@ public final class RacesDiplomacyUI extends BasePanel implements MouseListener, 
             TreatyAlliance alliance = (TreatyAlliance) treaty;
             int x1 = x+w-s20-offset+s5;
             parent.drawAllianceStars(g,x1,y4-s3,alliance.standing(player()),starW);
+        }
+        // Last council result
+        if (hasVoted) {
+            if (lastVote == Empire.ABSTAIN_ID)
+            	s = text("RACES_DIPLOMACY_ABSTAIN");
+            else if (lastVote == player().id)
+            	s = text("RACES_DIPLOMACY_VOTE_FOR_PLAYER");
+            else
+            	s = galaxy().empire(lastVote).name();
+            sw = g.getFontMetrics().stringWidth(s);
+            drawString(g, s, x+w-s20-sw, y5);
         }
     }
     private void drawRelationsMeter(Graphics2D g, Empire emp, int x, int y, int w, int h) {

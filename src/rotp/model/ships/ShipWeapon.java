@@ -85,7 +85,7 @@ public class ShipWeapon extends ShipComponent {
         }
         if(isBioWeapon() && target.num == 0)
         {
-            float targetAntiDote = target.empire.tech().antidoteLevel();
+            float targetAntiDote = target.empire().tech().antidoteLevel();
             float damage = TechBiologicalWeapon.avgDamage(maxDamage(), (int)targetAntiDote) * 200;
             return damage * num;
         }
@@ -107,7 +107,7 @@ public class ShipWeapon extends ShipComponent {
         }
         if(isBioWeapon() && target.num == 0)
         {
-            float targetAntiDote = target.empire.tech().antidoteLevel();
+            float targetAntiDote = target.empire().tech().antidoteLevel();
             float damage = TechBiologicalWeapon.avgDamage(maxDamage(), (int)targetAntiDote) * 200;
             return damage * num;
         }

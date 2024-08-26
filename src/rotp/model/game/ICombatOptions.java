@@ -198,6 +198,7 @@ public interface ICombatOptions extends IBaseOptsTools {
 	default int selectedRetreatRestrictions()	{ return retreatRestrictions.getIndex(); }
 
 	ParamInteger maxCombatTurns		= new ParamInteger(MOD_UI, "MAX_COMBAT_TURNS", 100)
+			.setDefaultValue(MOO1_DEFAULT, 50)
 			.setLimits(10, 1000)
 			.setIncrements(1, 5, 20);
 	default int maxCombatTurns()				{ return maxCombatTurns.get(); }

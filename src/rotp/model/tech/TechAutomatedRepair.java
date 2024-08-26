@@ -38,12 +38,23 @@ public final class TechAutomatedRepair extends Tech {
         techType = Tech.AUTOMATED_REPAIR;
 
         switch(typeSeq) {
-            case 0:
+            case 0: // Automated Repair
                 repairAdj = .15f;
                 break;
-            case 1: default:
+            case 1: // Advanced Damage Control
                 repairAdj = .3f;
                 break;
+            case 2: // Amoeba Max Damage, Monster only, managed by captain and combat stack.
+                restricted = true;
+                repairAdj  = .0f;
+                break;
+            case 3: // Amoeba Mitosis, Monster only, managed by captain and combat stack.
+            	restricted = true;
+                repairAdj  = .0f;
+                break;
+            default:
+            	repairAdj = .3f;
+            	System.err.println("TechAutomatedRepair initialization error: unknown level " + typeSeq);
         }
     }
     @Override

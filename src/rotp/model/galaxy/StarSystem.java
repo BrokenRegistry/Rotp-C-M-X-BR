@@ -168,6 +168,15 @@ public class StarSystem implements Base, Sprite, IMappedObject, Serializable {
         else
             return galaxy().system(nearbySystems[i]);
     }
+    public List<StarSystem> nearbySystems(float maxDist) {
+    	 Galaxy gal = galaxy();
+    	 List<StarSystem> nearSystems = new ArrayList<>();
+    	 for (StarSystem other : gal.starSystems()) {
+    		 if (other != this && distanceTo(other) < maxDist)
+                 nearSystems.add(other);
+    	 }
+    	 return nearSystems;
+    }
     private void initNearbySystems() {
         TARGET_SYSTEM = this;
         float maxDist = 8; // 2 * TechEngineWarp.MAX_SPEED; // modnar: change nearby distance to be more reasonable
@@ -215,7 +224,7 @@ public class StarSystem implements Base, Sprite, IMappedObject, Serializable {
     public SpaceMonster monster()               { return monster; }
     public void monster(SpaceMonster sm)        {
     	monster = sm;
-    	if (monster!= null && monster.isGuardian()) {
+    	if (monster!= null && monster.isOrionGuardian()) {
     		monster.sysId(id);
     		monster.setXY(x, y);
     	}
@@ -269,7 +278,7 @@ public class StarSystem implements Base, Sprite, IMappedObject, Serializable {
         return 0;
     }
     public List<ShipFleet> orbitingFleets()     {
-    	if(monster != null && monster.isMonsterGuardian()) {
+    	if(monster != null && monster.isFusionGuardian()) {
     		List<ShipFleet> list = galaxy().ships.orbitingFleets(id);
     		list.add(monster);
     		return list;

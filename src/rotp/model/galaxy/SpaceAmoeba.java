@@ -15,9 +15,11 @@
  */
 package rotp.model.galaxy;
 
+import java.awt.Color;
 import java.util.List;
 
 import rotp.model.colony.Colony;
+import rotp.model.combat.CombatStackMonster;
 import rotp.model.combat.CombatStackSpaceAmoeba;
 import rotp.model.planet.PlanetType;
 import rotp.model.ships.ShipArmor;
@@ -26,15 +28,13 @@ import rotp.model.ships.ShipDesign;
 import rotp.model.ships.ShipDesignLab;
 import rotp.model.ships.ShipECM;
 import rotp.model.ships.ShipEngine;
-import rotp.model.ships.ShipManeuver;
 import rotp.model.ships.ShipShield;
-import rotp.model.ships.ShipSpecialRepair;
-import rotp.model.ships.ShipWeaponBeam;
-import rotp.model.tech.TechAutomatedRepair;
-import rotp.model.tech.TechShipWeapon;
 
 public class SpaceAmoeba extends SpaceMonster {
 	private static final long serialVersionUID = 1L;
+    private static final Color shieldColor	= Color.cyan;
+    private static final String imageKey	= "SPACE_AMOEBA";
+    private static final boolean isFusion	= false;
 
 	public SpaceAmoeba(Float speed, Float level) {
 		super("SPACE_AMOEBA", -4, speed, level);
@@ -42,11 +42,15 @@ public class SpaceAmoeba extends SpaceMonster {
 
 	private int hullHitPoints()		{ return moO1Level (3000, 1000, 200, 0.5f, 0.5f); }
 	
-	@Override public void initCombat()		{
+	@Override public void initCombat()			{
 		super.initCombat();
-		addCombatStack(new CombatStackSpaceAmoeba(this, travelSpeed(), stackLevel()));
+		if (options().isMoO1Monster())
+			addCombatStack(new CombatStackMonster(this, imageKey, stackLevel(), 0, isFusion, shieldColor));
+		else
+			addCombatStack(new CombatStackSpaceAmoeba(this, imageKey, stackLevel(), 0, shieldColor));
 	}
-	@Override public SpaceMonster getCopy() { return new SpaceAmoeba(null, null); }
+	@Override public SpaceMonster getCopy()		{ return new SpaceAmoeba(null, null); }
+	@Override protected int otherSpecialCount() { return options().isMoO1Monster()? 1:3; }
 	@Override public void degradePlanet(StarSystem sys) {
 		Colony col = sys.colony();
 		if (col != null) {
@@ -64,107 +68,91 @@ public class SpaceAmoeba extends SpaceMonster {
 	}
 	@Override protected ShipDesign designMoO1()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		// System.out.println();
-		// System.out.print("design ");
-		ShipDesign design = lab.newBlankDesign(-hullHitPoints());
-		
+		ShipDesign design = lab.newBlankDesign(ShipDesign.maxSpecials, stackLevel(hullHitPoints()));
 		design.mission	(ShipDesign.DESTROYER);
 
-		// System.out.print("engine ");
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(1, engines.size()-1)));
 
-		// System.out.print("computer ");
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int attackLevel = stackLevel(10);
+		design.computer	(computers.get(min(attackLevel, computers.size()-1)));
 
-		// System.out.print("armor ");
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
 
-		// System.out.print("shield ");
 		List<ShipShield> shields = lab.shields();
 		design.shield	(shields.get(stackLevel(0, shields.size()-1)));
 
-		// System.out.print("ecm ");
 		List<ShipECM> ecms = lab.ecms();
 		design.ecm		(ecms.get(stackLevel(2, ecms.size()-1)));
 
-		// System.out.print("maneuver ");
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(1, maneuvers.size()-1)));
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(attackLevel);
+		design.monsterBeamDefense(1);
+		design.monsterEcmDefense(1);
+		design.monsterInitiative(100);
 
-		// System.out.print("weapon ");
 		int wpnAll = max(1, stackLevel(1));
 		for (int i=4; i>0; i--) {
 			int count = wpnAll/i;
 			if (count != 0) {
-				// Amoeba stream
-				//design.weapon(i-1, new ShipWeaponBeam((TechShipWeapon) tech("ShipWeapon:22"), false), count);
-				design.weapon(i-1, lab.beamWeapon(22, false), count);
+				design.weapon(i-1, lab.amoebaStream(), count); // Amoeba stream
 				wpnAll -= count;
 			}
 		}
-		design.special(0, lab.specialAdvDamControl());
+		design.special(0, lab.specialAdvDamControl());	// Advanced Damage control
+		design.special(1, lab.specialResistStasis());	// Immune to Stasis
 
-		// design.special(0, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
 		return design;
 	}
 	@Override protected ShipDesign designRotP()	{
 		ShipDesignLab lab = empire().shipLab();
-		
-		// System.out.println();
-		// System.out.print("design ");
-		int hp = monsterLevel == 1f? 3500 : 1500;
-		ShipDesign design = lab.newBlankDesign(-hp);
-		
+		int hp = 3500;
+		if (stackLevel() < 0.75f)
+			hp = 1500;
+		else if (stackLevel() > 1.35f)
+			hp = 7500;
+		else if (stackLevel() >= 2f)
+			hp = 15500;
+		else if (stackLevel() >= 4f)
+			hp = 31500;
+		else if (stackLevel() >= 8f)
+			hp = 63500;
+		ShipDesign design = lab.newBlankDesign(5, hp);
 		design.mission	(ShipDesign.DESTROYER);
 
-		// System.out.print("engine ");
 		List<ShipEngine> engines = lab.engines();
 		design.engine	(engines.get(stackLevel(1, engines.size()-1)));
 
-		// System.out.print("computer ");
 		List<ShipComputer> computers = lab.computers();
-		design.computer	(computers.get(stackLevel(10, computers.size()-1)));
+		int computerLevel = stackLevel(10);
+		design.computer	(computers.get(min(computerLevel, computers.size()-1)));
 
-		// System.out.print("armor ");
 		List<ShipArmor> armors = lab.armors();
 		design.armor	(armors.get(stackLevel(0, armors.size()-1)));
 
-		// System.out.print("shield ");
 		List<ShipShield> shields = lab.shields();
 		design.shield	(shields.get(stackLevel(0, shields.size()-1)));
 
-		// System.out.print("ecm ");
 		List<ShipECM> ecms = lab.ecms();
 		design.ecm		(ecms.get(stackLevel(0, ecms.size()-1)));
 
-		// System.out.print("maneuver ");
-		List<ShipManeuver> maneuvers = lab.maneuvers();
-		design.maneuver	(maneuvers.get(stackLevel(0, maneuvers.size()-1)));
+		int maneuver = max(2, stackLevel(2));
+		design.maneuver(lab.maneuver(maneuver));
+		design.monsterManeuver(maneuver);
+		design.monsterAttackLevel(20); // Always hit
+		design.monsterBeamDefense(1);
+		design.monsterEcmDefense(1);
+		design.monsterInitiative(100);
 
-		// TODO BR: create Amoeba specials
-		
-		design.special(0, lab.specialBattleScanner()); // Limited Damage
-		design.special(1, lab.specialBattleScanner()); // Mitosis
-		design.special(2, lab.specialAmoebaEatShips()); // Eat
-		design.special(0, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:2"))); // Limited Damage
-		design.special(1, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:3"))); // Mitosis
-//		design.special(2, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Eat
-		
-		// design.special(0, new ShipSpecialRepair((TechAutomatedRepair)tech("AutomatedRepair:1"))); // Advanced Damage Control
-		// design.special(0, lab.specialBattleScanner());
-		// design.special(1, lab.specialTeleporter());
-		// design.special(2, lab.specialCloak());
-		// design.name(text(IMAGE_KEY));
-		// lab.iconifyDesign(design);
+		design.special(0, lab.specialAmoebaMaxDamage());	// Limited Damage
+		design.special(1, lab.specialAmoebaMitosis());		// Mitosis
+		design.special(2, lab.specialAmoebaEatShips());		// Eat Ships
+		design.special(3, lab.specialResistRepulsor());		// Resist Repulsors
+		design.special(4, lab.specialResistStasis());		// Immune to Stasis
 		return design;
 	}
 }

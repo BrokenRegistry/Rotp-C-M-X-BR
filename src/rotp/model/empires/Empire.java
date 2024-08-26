@@ -401,6 +401,8 @@ public final class Empire implements Base, NamedObject, Serializable {
         transportImage = null;
     }
     public boolean canSeeShips(int empId) {
+    	if (isMonster(empId))
+    		return true;
         if (canSeeShips == null) {
             canSeeShips = new boolean[galaxy().numEmpires()];
             for (int i=0;i<canSeeShips.length;i++) 
@@ -1220,6 +1222,12 @@ public final class Empire implements Base, NamedObject, Serializable {
         return tech().canLearnToColonize(pt);
     }
     public boolean knowETA(Ship sh) {
+    	if (isMonster(sh.empId())) {
+    		SpaceMonster monster = (SpaceMonster) sh;
+    		if (monster.event == null)
+    			return false;
+    		return monster.event.notified();
+    	}
         return knowShipETA || canSeeShips(sh.empId());
     }
     public StarSystem defaultSystem() {
@@ -4511,10 +4519,10 @@ public final class Empire implements Base, NamedObject, Serializable {
             return null;
 
         Empire shEmp = d.empire();
+        if (shEmp.isMonster())
+            return new ShipView(d);
         if (shEmp == this)
             return shipLab.shipViewFor(d);
-        if (shEmp.isMonster())
-            return shEmp.shipLab().shipViewFor(d);
 
         EmpireView cv = viewForEmpire(d.empire());
         if (cv != null)

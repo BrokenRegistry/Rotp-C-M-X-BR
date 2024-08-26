@@ -42,6 +42,7 @@ import rotp.model.empires.SystemView;
 import rotp.model.galaxy.IMappedObject;
 import rotp.model.galaxy.Location;
 import rotp.model.galaxy.ShipFleet;
+import rotp.model.galaxy.SpaceMonster;
 import rotp.model.galaxy.StarSystem;
 import rotp.model.ships.ShipDesign;
 import rotp.ui.BasePanel;
@@ -705,12 +706,18 @@ public class MainUI extends BasePanel implements IMapHandler {
    		}
 
    		Empire empire = fleet.empire();
+   		
     	if (empire == null) {
    			showFleetInfo = false;
     		return;
     	}
-
     	Empire player = player();
+    	if (!player.hasContact(empire) && !empire.isMonster() && empire != player) {
+   			showFleetInfo = false;
+   			misClick();
+    		return;
+    	}
+
     	RacesMilitaryUI milPane = RacesUI.instance.militaryPanel;
     	
     	int w = scaled(947);
@@ -724,19 +731,32 @@ public class MainUI extends BasePanel implements IMapHandler {
 		if (empire.isPlayer()) {
 			for( Entry<ShipDesign, Integer> entry : visShip.entrySet()) {
               	ShipView view = player.shipViewFor(entry.getKey());
-              	milPane.drawShipDesign(g, view, entry.getValue(), x, y, w, h);
-                  y += dh;
+              	milPane.drawShipDesign(g, view, entry.getValue(), x, y, w, h, paneBackground);
+                y += dh;
 			}
-			milPane.paintPlayerData(g, x, yi);
+			milPane.paintPlayerData(g, x, yi, paneBackground);
+		}
+		else if (empire.isMonster()) {
+			SpaceMonster monster = (SpaceMonster) fleet;
+			//ShipDesign design = fleet.design(0);
+			ShipDesign design = monster.design(0);
+			for( Entry<ShipDesign, Integer> entry : visShip.entrySet()) {
+				int num = entry.getValue();
+              	ShipView view = empire.shipViewFor(design);
+              	h = max(h, BasePanel.s20 * design.maxSpecials());
+              	milPane.drawShipDesign(g, view, num, x, y, w, h, paneBackground);
+                y += dh;
+                milPane.paintMonsterData(g, empire, x, yi, paneBackground);
+			}
 		}
 		else {
 			SpyNetwork spies = player.viewForEmpire(empire).spies();
 			for( Entry<ShipDesign, Integer> entry : visShip.entrySet()) {
               	ShipView view = spies.shipViewFor(entry.getKey());
-              	milPane.drawShipDesign(g, view, entry.getValue(), x, y, w, h);
+              	milPane.drawShipDesign(g, view, entry.getValue(), x, y, w, h, paneBackground);
                   y += dh;
 			}
-			milPane.paintAlienData(g, empire, x, yi);
+			milPane.paintAlienData(g, empire, x, yi, paneBackground);
 		}
     }
     public void advanceMap() {

@@ -46,7 +46,7 @@ public final class ShipWeaponBiological extends ShipWeapon {
     public boolean isLimitedShotWeapon()    { return true; }
     @Override
     public float estimatedBioweaponDamage(CombatStack source, CombatStackColony target) {
-        float antidote = target.empire.tech().antidoteLevel();
+        float antidote = target.empire().tech().antidoteLevel();
         // this is simplified and inexact when antidote > 1
         // and doesn't consider att vs def
         float min = max(0, minDamage()-antidote);
@@ -67,7 +67,7 @@ public final class ShipWeaponBiological extends ShipWeapon {
             if (random() < pct) 
             {
                 float currentDamage = roll(minDamage(), maxDamage());
-                currentDamage = max(0, currentDamage - target.empire.tech().antidoteLevel());
+                currentDamage = max(0, currentDamage - target.empire().tech().antidoteLevel());
                 totalDamage += currentDamage;
             }
         }

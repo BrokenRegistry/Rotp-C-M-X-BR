@@ -60,8 +60,10 @@ public class ShipView implements Base,Serializable {
     private final ShipWeapon[] weapon = new ShipWeapon[ShipDesign.maxWeapons()];
     private final boolean[] wpnKnown = new boolean[ShipDesign.maxWeapons()];
     private final int[] wpnCount = new int[ShipDesign.maxWeapons()];
-    private final ShipSpecial[] special = new ShipSpecial[ShipDesign.maxSpecials()];
-    private final boolean[] spcKnown = new boolean[ShipDesign.maxSpecials()];
+//    private final ShipSpecial[] special = new ShipSpecial[ShipDesign.maxSpecials()];
+//    private final boolean[] spcKnown = new boolean[ShipDesign.maxSpecials()];
+    private final ShipSpecial[] special;
+    private final boolean[] spcKnown;
 
     // historical data
     private int firstViewDate = 0;
@@ -136,9 +138,19 @@ public class ShipView implements Base,Serializable {
     public static Comparator<ShipView> VIEW_DATE = (ShipView o1, ShipView o2) -> o2.lastViewDate().compareTo(o1.lastViewDate());
     public static Comparator<ShipView> VIEW_ACTIVE = new ViewActiveComparator();
     public ShipView(Empire o, ShipDesign d) {
+        special = new ShipSpecial[d.maxSpecials()];
+        spcKnown = new boolean[d.maxSpecials()];
         owner = o;
         design = d;
         empire = d.empire();
+    }
+    public ShipView(ShipDesign d) { // BR: For Monsters
+        special	 = new ShipSpecial[d.maxSpecials()];
+        spcKnown = new boolean[d.maxSpecials()];
+        empire	 = d.empire();
+        owner	 = empire;
+        design	 = d;
+        scan();
     }
     public boolean matches(Design d) { return design == d;  }
     // detect is for long-range scanning
@@ -238,7 +250,7 @@ public class ShipView implements Base,Serializable {
         }
     }
     private void scanSpecials() {
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0; i<special.length; i++) {
             spcKnown[i] = true;
             if ((design.special(i) == null) || design.special(i).isNone())
                 special[i] = null;

@@ -32,7 +32,6 @@ import rotp.model.galaxy.StarSystem;
 import rotp.model.ships.ShipArmor;
 import rotp.model.ships.ShipComputer;
 import rotp.model.ships.ShipDesign;
-import static rotp.model.ships.ShipDesign.maxSpecials;
 import static rotp.model.ships.ShipDesign.maxWeapons;
 import rotp.model.ships.ShipDesignLab;
 import rotp.model.ships.ShipECM;
@@ -209,16 +208,16 @@ public class NewShipTemplate implements Base {
                 score *= 2;
 
             float specialsMod = 1;
-            for (int s=0; s<maxSpecials(); s++)
+            for (int s=0; s<design.maxSpecials(); s++)
             {
-                //Intertial doesn't add to score because it's already taken into account for in the mitigation
+                //Inertial doesn't add to score because it's already taken into account for in the mitigation
                 if(!design.special(s).isNone() && !design.special(s).isInertial())
                     specialsMod*=1.26;
             }
 
             score *= specialsMod;
             float weaponSizeMod = 1.0f;
-            if(role == role.BOMBER && biggestBombSize > 0)
+            if(role == DesignType.BOMBER && biggestBombSize > 0)
                 weaponSizeMod *= bombWpnSize / biggestBombSize;
             else if(biggestShipWeaponSize > 0)
                 weaponSizeMod *= spaceWpnSize / biggestShipWeaponSize;
@@ -231,7 +230,7 @@ public class NewShipTemplate implements Base {
             //System.out.print("\n"+ai.empire().name()+" "+design.name()+" Role: "+role+" size: "+design.size()+" score: "+score+" dmgPerCostLimit: "+dmgPerCostLimit+" tonnageScore: "+design.spaceUsed() / design.cost()+" defscore: "+defScore+" wpnScore: "+weaponSizeMod+" costlimit: "+costLimit+" spaceWpnSize: "+spaceWpnSize+" bomb-adpt: "+ai.bombingAdapted(design)+" specialsMod: "+specialsMod+" absorbPct: "+absorbPct+ " hitPct: "+hitPct);
             designSorter.put(score, design);
             //For bombers we want the smallest that has the best bomb because it's easiest to "dose"
-            if(role == role.BOMBER && weaponSizeMod == 1)
+            if(role == DesignType.BOMBER && weaponSizeMod == 1)
                 break;
         }
         // lastKey is design with greatest damage
@@ -262,7 +261,7 @@ public class NewShipTemplate implements Base {
         ai.lab().nameDesign(d);
         setFastestEngine(ai, d);
         // battle computers are always the priority in MOO1 mechanics
-        if(role != role.DESTROYER)
+        if(role != DesignType.DESTROYER)
             setBestBattleComputer(ai, d); 
         
         float totalSpace = d.availableSpace();
@@ -299,7 +298,7 @@ public class NewShipTemplate implements Base {
                 {
                     needRange = true;
                 }
-                for (int j=0;j<maxSpecials();j++)
+                for (int j=0;j<enemyDesign.maxSpecials();j++)
                 {
                     if(enemyDesign.special(j).createsBlackHole())
                         boostInertial = true;
@@ -461,7 +460,7 @@ public class NewShipTemplate implements Base {
         if(avgHP == 0)
             avgHP = d.hits();
         
-        for (int j=0;j<maxSpecials();j++)
+        for (int j=0;j<d.maxSpecials();j++)
         {
             if(d.special(j).beamRangeBonus() > 0)
                 needRange = false;
@@ -502,7 +501,7 @@ public class NewShipTemplate implements Base {
                 break;
         }
         //Since destroyer is always tiny and we want to make sure we have a weapon, the computer is added afterwards
-        if(role == role.DESTROYER)
+        if(role == DesignType.DESTROYER)
             setBestBattleComputer(ai, d); 
         ai.lab().iconifyDesign(d);
         for (int i = 0; i <= 2; ++i) {
@@ -635,7 +634,7 @@ public class NewShipTemplate implements Base {
         int designsWithStasisField = 0;
         for (int slot=0;slot<ShipDesignLab.MAX_DESIGNS;slot++) {
             ShipDesign ourDesign = ai.lab().design(slot);
-            for (int j=0;j<maxSpecials();j++)
+            for (int j=0;j<ourDesign.maxSpecials();j++)
             {
                 if(!ourDesign.special(j).isNone() && ourDesign.special(j).tech().isType(Tech.STASIS_FIELD) == true)
                     designsWithStasisField++;
@@ -1038,7 +1037,7 @@ public class NewShipTemplate implements Base {
     public float specialSpace(ShipDesign d)
     {
         float totalSpecialSpace = 0;
-        for (int i=0; i<maxSpecials(); i++)
+        for (int i=0; i<d.maxSpecials(); i++)
         {
             totalSpecialSpace += d.special(i).space(d) * d.wpnCount(i);
         }

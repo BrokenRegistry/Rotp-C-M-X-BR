@@ -88,7 +88,7 @@ public class RandomEventSpacePirates extends RandomEventMonsters {
 		}
 		else {
 			// destroying the space pirates gives reserve BC, scaling with turn number
-			spoilsBC = lootBC * 5/2;
+			spoilsBC = galaxy().currentTurn() * 25;
 		}
 		return spoilsBC;
 	}

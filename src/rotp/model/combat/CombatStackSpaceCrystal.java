@@ -22,13 +22,13 @@ import rotp.model.galaxy.SpaceCrystal;
 import rotp.model.galaxy.StarSystem;
 import rotp.model.ships.ShipWeaponMissileType;
 
-public class CombatStackSpaceCrystal extends CombatStack {
+public class CombatStackSpaceCrystal extends CombatStackMonster {
     private static final int MAX_WEAPON_DAMAGE = 1000;
     private boolean weaponUsed = false;
     public SpaceCrystal monster;
-    public float speed;
     public float monsterLevel;
-    public CombatStackSpaceCrystal(SpaceCrystal crystal, Float speed, Float level) {
+    public CombatStackSpaceCrystal(SpaceCrystal crystal, String imageKey, Float level, int desId, Color shieldC) {
+    	super(crystal, imageKey, level, desId, false, shieldC);
     	monster = crystal;
         if (level == null)
         	monsterLevel = options().monstersLevel();
@@ -43,14 +43,12 @@ public class CombatStackSpaceCrystal extends CombatStack {
         missileDefense = 1;
         maxShield = shield = 5.0f;
         captain = new CrystalShipCaptain(monster);
-        image = image("SPACE_CRYSTAL");
+        image = image(imageKey);
     }    
     @Override
 	public float missileInterceptPct(ShipWeaponMissileType wpn)   {
         return max(0, 0.75f - (0.01f * wpn.tech().level));
     }
-    @Override
-    public String name()                { return text("SPACE_CRYSTAL"); }
     @Override
     public boolean isMonster()          { return true; }
     @Override
@@ -124,6 +122,5 @@ public class CombatStackSpaceCrystal extends CombatStack {
         brighten = 0;
         mgr.ui.paintAllImmediately();
     }
-    @Override public Color shieldBaseColor() { return Color.cyan; }
 }
         

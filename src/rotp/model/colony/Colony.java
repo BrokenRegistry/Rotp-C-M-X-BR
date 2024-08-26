@@ -1602,7 +1602,7 @@ public final class Colony implements Base, IMappedObject, Serializable {
         	// BR: Set the new governor
         	setGovernor(govOptions().isGovernorOnByDefault());
             if (isGovernor()) {
-	            System.out.println("System captured "+name()+", clearing shipbuilding");
+	            //System.out.println("System captured "+name()+", clearing shipbuilding");
 	            locked(SHIP, false);
 	            locked(INDUSTRY, false);
 	            setAllocation(SHIP, 0);

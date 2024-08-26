@@ -415,6 +415,7 @@ public class Galaxy implements Base, Serializable {
     	
     	if (options().persistentRNG())
     		Rotp.rand(galRandom);
+    	orionEmpire = new Empire(this, -2, orionId(), 0, "Orion"); // to update tech
         for (Empire emp: empires())
              emp.validateOnLoad();
         RandomEventSpacePirates.triggerEmpire = isTechDiscovered(RandomEventSpacePirates.TRIGGER_TECH);
@@ -426,7 +427,7 @@ public class Galaxy implements Base, Serializable {
     	for (StarSystem sys : starSystems())
     		if (sys != null && sys.hasMonster()) {
     			SpaceMonster monster = sys.monster();
-    			if (monster.isGuardian()) {
+    			if (monster.isOrionGuardian()) {
     				monster.sysId(sys.id);
     				monster.setXY(sys);
     			}
@@ -505,7 +506,7 @@ public class Galaxy implements Base, Serializable {
         	spaceMonsters = events.monsters();
         	for (StarSystem sys : starSystems())
         		if (sys != null && sys.hasMonster())
-        			if (sys.monster().isGuardian())
+        			if (sys.monster().isOrionGuardian())
         				spaceMonsters.add(sys.monster());
     	}
     	return spaceMonsters;

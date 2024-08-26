@@ -25,6 +25,8 @@ public class ShipSpecial extends ShipComponent {
     public boolean isPulsar()          { return false;  }
     public boolean isInertial()        { return false;  }
     public boolean isMissileShield()   { return false; }
+    public boolean isImmuneToStasis()  { return false; }
+    public boolean resistRepulsors()   { return false; }
     public boolean createsBlackHole()  { return false; }
     public boolean allowsTeleporting() { return false;  }
     public boolean allowsScanning()    { return false;  }

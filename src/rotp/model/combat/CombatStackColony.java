@@ -46,9 +46,9 @@ public class CombatStackColony extends CombatStack {
     public CombatStackColony(Colony col, ShipCombatManager m) {
         mgr = m;
         colony = col;
-        empire = colony.empire();
-        usingAI = (empire == null) || empire.isAIControlled();
-        captain = empire.ai().shipCaptain();
+        empire(colony.empire());
+        usingAI = (empire() == null) || empire().isAIControlled();
+        captain = empire().ai().shipCaptain();
         MissileBase mBase = missileBase();
         origNum = num = (int) colony.defense().bases();
         missile = mBase.missile().warhead();
@@ -180,7 +180,7 @@ public class CombatStackColony extends CombatStack {
         return (num > 0) && currentWeaponCanAttack(target);
     }
     @Override
-    public boolean canPotentiallyAttack(CombatStack target)   { return (num > 0) && !empire.alliedWith(id(target.empire)); }
+    public boolean canPotentiallyAttack(CombatStack target)   { return (num > 0) && !empire().alliedWith(id(target.empire())); }
     @Override
     public boolean canMove()               { return false; }
     @Override
@@ -251,7 +251,7 @@ public class CombatStackColony extends CombatStack {
     public boolean shipComponentValidTarget(int index, CombatStack target) {
         if (target == null)
             return false;
-        if (empire == target.empire)
+        if (empire() == target.empire())
             return false;
         return true;
     }

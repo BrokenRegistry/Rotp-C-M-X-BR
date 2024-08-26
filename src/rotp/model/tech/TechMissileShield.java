@@ -42,9 +42,9 @@ public final class TechMissileShield extends Tech {
         baseMissileShield = new MissileBaseMissileShield(this);
         baseBlockAdjPerLevel = .01f;
         switch(typeSeq) {
-            case 0: baseBlockPct = .40f; break;
-            case 1: baseBlockPct = .75f; break;
-            case 2: baseBlockPct = 1.00f; break;
+            case 0: baseBlockPct = .40f; break;		// Anti-Missile Rockets
+            case 1: baseBlockPct = .75f; break;		// Zyro Shield
+            case 2: baseBlockPct = 1.00f; break;	// Lightning Shield
         }
     }
     @Override

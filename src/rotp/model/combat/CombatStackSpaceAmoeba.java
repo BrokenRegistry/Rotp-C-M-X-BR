@@ -18,17 +18,15 @@ package rotp.model.combat;
 import java.awt.Color;
 
 import rotp.model.ai.AmoebaShipCaptain;
-import rotp.model.ai.MonsterShipCaptain;
+import rotp.model.ai.interfaces.ShipCaptain;
 import rotp.model.galaxy.SpaceAmoeba;
 
 public class CombatStackSpaceAmoeba extends CombatStackMonster {
 	private static final int DAMAGE_FOR_SPLIT = 500;
-	public SpaceAmoeba monster;
 	public float speed;
 	public float monsterLevel;
-	public CombatStackSpaceAmoeba(SpaceAmoeba amoeba, Float speed, Float level) {
-		super(amoeba, "SPACE_AMOEBA", level, 0, false);
-		monster = amoeba;
+	public CombatStackSpaceAmoeba(SpaceAmoeba amoeba, String imageKey, Float level, int desId, Color shieldC) {
+		super(amoeba, imageKey, level, desId, false, shieldC);
 		if (level == null)
 			monsterLevel = options().monstersLevel();
 		else
@@ -44,18 +42,23 @@ public class CombatStackSpaceAmoeba extends CombatStackMonster {
 			maxMove = move = 2;
 			beamDefense = 1;
 			missileDefense = 1;	 
-			captain = new MonsterShipCaptain(monster);
 		}
 		else {
 			maxMove = move = 2;
 			beamDefense = 1;
 			missileDefense = 1;	 
-			captain = new AmoebaShipCaptain(monster);	
 		}
 
 		reversed = random() < .5;
-		image = image("SPACE_AMOEBA");
+		image = image(imageKey);
 		scale = 1.5f;
+	}
+
+	@Override protected ShipCaptain getCaptain()		{
+		if (options().isMoO1Monster())
+			return super.getCaptain();
+		else
+			return new AmoebaShipCaptain((SpaceAmoeba) fleet());
 	}
 	@Override public void beginTurn() {
 		super.beginTurn();
@@ -134,7 +137,7 @@ public class CombatStackSpaceAmoeba extends CombatStackMonster {
 		else if (st.isColony()) {
 			CombatStackColony cStack = (CombatStackColony) st;
 			st.mgr.destroyStack(st);
-			monster.degradePlanet(st.mgr.system());
+			spaceMonster().degradePlanet(st.mgr.system());
 			cStack.colonyDestroyed = true;
 		}
 

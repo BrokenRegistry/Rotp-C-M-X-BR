@@ -1,0 +1,12 @@
+
+[tech]
+seq:    0
+name:   RESISTSPECIAL_0_NAME
+brief:  RESISTSPECIAL_0_BRIEF
+detail: RESISTSPECIAL_0_DETAIL
+
+[tech]
+seq:    1
+name:   RESISTSPECIAL_1_NAME
+brief:  RESISTSPECIAL_1_BRIEF
+detail: RESISTSPECIAL_1_DETAIL

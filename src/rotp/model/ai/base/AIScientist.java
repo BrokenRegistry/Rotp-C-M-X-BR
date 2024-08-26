@@ -23,6 +23,7 @@ import rotp.model.empires.Empire;
 import rotp.model.empires.EmpireView;
 import rotp.model.galaxy.StarSystem;
 import rotp.model.tech.Tech;
+import rotp.model.tech.TechAmoebaEatShips;
 import rotp.model.tech.TechArmor;
 import rotp.model.tech.TechAtmosphereEnrichment;
 import rotp.model.tech.TechAutomatedRepair;
@@ -61,12 +62,14 @@ import rotp.model.tech.TechMissileWeapon;
 import rotp.model.tech.TechPersonalShield;
 import rotp.model.tech.TechPlanetaryShield;
 import rotp.model.tech.TechRepulsor;
+import rotp.model.tech.TechResistSpecial;
 import rotp.model.tech.TechRoboticControls;
 import rotp.model.tech.TechScanner;
 import rotp.model.tech.TechShipInertial;
 import rotp.model.tech.TechShipNullifier;
 import rotp.model.tech.TechShipWeapon;
 import rotp.model.tech.TechSoilEnrichment;
+import rotp.model.tech.TechSquidInk;
 import rotp.model.tech.TechStargate;
 import rotp.model.tech.TechStasisField;
 import rotp.model.tech.TechStreamProjector;
@@ -1133,4 +1136,9 @@ public class AIScientist implements Base, Scientist {
     public float baseValue(TechTorpedoWeapon t) {
         return t.level();
     }
+
+    // Monster tech
+    @Override public float baseValue(TechResistSpecial t)  { return t.level(); }
+    @Override public float baseValue(TechAmoebaEatShips t) { return t.level(); }
+    @Override public float baseValue(TechSquidInk t)       { return t.level(); }
 }

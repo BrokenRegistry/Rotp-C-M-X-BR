@@ -17,6 +17,7 @@ package rotp.model.events;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.List;
 
 import rotp.model.colony.Colony;
 import rotp.model.empires.Empire;
@@ -34,7 +35,7 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 	protected SpaceMonster monster;
 	protected float level = 1.0f;
 	protected float realSpeed = 1.0f;
-	protected float avgSpeed  = 1;
+	protected float avgSpeed  = 1; // Not to be set: kept for backward compatibility
 	protected HashMap<Integer, Point.Float> path;
 	protected long monsterId;
     // BR: Dynamic options for future backward compatibility
@@ -43,7 +44,10 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 	// IMonsterPos
 	@Override public DynOptions dynamicOpts()	{ return dynamicOptions; }
 	@Override public boolean notified()			{ return targetTurnCount<=NOTIFY_TURN_COUNT; }
-	@Override public int targetTurnCount()		{ return bounds(0, targetTurnCount, wanderPath().size()); }
+	@Override public int targetTurnCount()		{
+		targetTurnCount = bounds(0, targetTurnCount, wanderPath().size());
+		return targetTurnCount;
+	}
 	@Override public Point.Float pos()			{ return wanderPath().get(targetTurnCount()); }
 	@Override public HashMap<Integer, Point.Float> wanderPath()		{
 		if (path == null)
@@ -98,7 +102,6 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		galaxy().events().addActiveEvent(this);
 		if (targetTurnCount == NOTIFY_TURN_COUNT) 
 			approachSystem();	 
-
 	}
 	@Override public void nextTurn()			{
 		if (isEventDisabled()) {
@@ -119,7 +122,7 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		
 		if (targetTurnCount == NOTIFY_TURN_COUNT) 
 			approachSystem();	 
-		else if (targetTurnCount == 0) 
+		else if (targetTurnCount <= 0) 
 			enterSystem();
 	}
 	@Override public int  startTurn()			{
@@ -136,17 +139,21 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		StarSystem targetSystem = galaxy().system(targetSysId);
 		// next system is one of the 10 nearest systems
 		// more likely to go to new system (25%) than visited system (5%)
-		int[] near = targetSystem.nearbySystems();
+		float maxDist = 8;
+		if (options().isMoO1Monster())
+			maxDist = 6;
+		List<StarSystem> near = targetSystem.nearbySystems(maxDist);
+		shuffle(near);
 		boolean stopLooking = false;		
 		int nextSysId = -1;
 		int loops = 0;
-		if (near.length > 0) {
+		if (near.size() > 0) {
 			while (!stopLooking) {
 				loops++;
-				for (int i=0;i<near.length;i++) {
-					float chance = monster.vistedSystems().contains(near[i]) ? 0.05f : 0.25f;
+				for (StarSystem sys : near) {
+					float chance = monster.vistedSystems().contains(sys.id) ? 0.05f : 0.25f;
 					if (random() < chance) {
-						nextSysId = near[i];
+						nextSysId = sys.id;
 						stopLooking = true;
 						break;
 					}
@@ -222,7 +229,6 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		targetSysId		= oldSysId();
 		targetTurnCount	= oldTurnCount()+1;
 		realSpeed		= 1.0f;
-		avgSpeed		= 1f / (1.5f * max(1, 100.0f/galaxy().maxNumStarSystems()));
 		initMonster();
 	}
 	private String eventName()					{ return "EVENT_SPACE_" + name(); }
@@ -306,7 +312,7 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		int nextSysId = getNextSystem();
 		if (nextSysId < 0) {
 			log("ERR: Could not find next system. Space " + dispName() + " removed.");
-			// System.out.println("ERR: Could not find next system. Space " + dispName() + " removed.");
+			System.out.println("ERR: Could not find next system. Space " + dispName() + " removed.");
 			terminateEvent(this);
 			return;
 		}
@@ -314,8 +320,8 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 
 		targetSysId = nextSysId;	
 		monster.destSysId(targetSysId);
+		targetTurnCount = travelTurnsRemaining(); // computed here, as the speed may change.
 		monster.launch();
-		targetTurnCount = travelTurnsRemaining();
 		buildPath();
 		if (targetTurnCount <= NOTIFY_TURN_COUNT) {
 			approachSystem();
@@ -380,9 +386,9 @@ abstract class RandomEventMonsters extends AbstractRandomEvent implements IMonst
 		return s1;
 	}
 	private float avgSpeed()			{
-		if (avgSpeed == 1)
-			avgSpeed = 1f / (1.5f * max(1, 100.0f/galaxy().maxNumStarSystems()));
-		return avgSpeed;
+		if (options().isMoO1Monster())
+			return 1f;
+		return 1f / (1.5f * max(1, 100.0f/galaxy().maxNumStarSystems()));
 	}
 	private int travelTurnsRemaining()	{ return (int) Math.ceil(distanceToTarget()/avgSpeed()); }
 	private float distanceToTarget()	{ return galaxy().system(targetSysId).distanceTo(monster); }

@@ -145,7 +145,16 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
 
     	if (showInfo == 1) {
     		if (mgr.results().isMonsterAttack()) {
-    			drawMonsterInfo(mgr.results().monster());
+    			for(CombatStack st : mgr.activeStacks()) {
+                    if(st.isMonster()) {
+                    	Empire emp = st.empire();
+                    	ShipView view = emp.shipViewFor(st.design());
+                    	h = max(h, BasePanel.s20 * st.design().maxSpecials());
+                    	milPane.drawShipDesign(g, view, st.num, x, y, w, h, MainUI.paneBackground);
+                        y += dh;
+                        milPane.paintMonsterData(g, emp, x, yi, MainUI.paneBackground);
+                    }
+        		}
     			return;
     		}
     		else {
@@ -155,32 +164,28 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
             	SpyNetwork spies = player.viewForEmpire(alien).spies();
         		for(CombatStack st : mgr.activeStacks()) {
                     if(st.isShip()) {
-                        if(st.empire == alien) {
+                        if(st.empire() == alien) {
                         	ShipView view = spies.shipViewFor(st.design());
-                        	milPane.drawShipDesign(g, view, st.num, x, y, w, h);
+                        	milPane.drawShipDesign(g, view, st.num, x, y, w, h, MainUI.paneBackground);
                             y += dh;
                         }
                     }
         		}
-    			milPane.paintAlienData(g, alien, x, yi);
+    			milPane.paintAlienData(g, alien, x, yi, MainUI.paneBackground);
     		}
     	}
-
-    	if (showInfo == 2) {
+    	else if (showInfo == 2) {
     		for(CombatStack st : mgr.activeStacks()) {
                 if(st.isShip()) {
-                    if(st.empire == player) {
+                    if(st.empire() == player) {
                     	ShipView view = player.shipViewFor(st.design());
-                    	milPane.drawShipDesign(g, view, st.num, x, y, w, h);
+                    	milPane.drawShipDesign(g, view, st.num, x, y, w, h, MainUI.paneBackground);
                         y += dh;
                     }
                 }
     		}
-    		milPane.paintPlayerData(g, x, yi);
+    		milPane.paintPlayerData(g, x, yi, MainUI.paneBackground);
     	}
-    }
-    private void drawMonsterInfo(SpaceMonster monster) {
-    	// TODO BR: drawMonsterInfo(SpaceMonster monster)
     }
     @Override
     public boolean drawSprites()   { return drawSprites; }
@@ -349,7 +354,7 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
             int putVal = st.num;
             if(st.isShip())
             {
-                if(st.empire == pl)
+                if(st.empire() == pl)
                 {
                     if(mySizes.containsKey(st.design().sizeDesc()))
                         putVal += mySizes.get(st.design().sizeDesc());
@@ -364,7 +369,7 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
             }
             else if(st.isColony() && st.isArmed())
             {
-                if(st.empire == pl)
+                if(st.empire() == pl)
                     mySizes.put(text("MAIN_COLONY_BASES"), putVal);
                 else
                     aiSizes.put(text("MAIN_COLONY_BASES"), putVal);
@@ -377,7 +382,7 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
         }
         for(Entry<String, Integer> entry : aiSizes.entrySet())
         {
-        	Color txtColor = aiEmpire==null? Color.RED : aiEmpire.color(); // TODO BR: MonsterColor
+        	Color txtColor = aiEmpire==null? Color.RED : aiEmpire.color();
             drawBorderedString(g, entry.getValue() + " " + entry.getKey(), 1, x2, y2, Color.black, txtColor);
             y2 += lineH;
         }
@@ -1154,7 +1159,7 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
         for(CombatStack st : mgr.activeStacks()) {
             int putVal = st.num;
             if (st.isShip()) {
-                if (st.empire == player) {
+                if (st.empire() == player) {
                     if (mySizes.containsKey(st.design().sizeDesc()))
                         putVal += mySizes.get(st.design().sizeDesc());
                     mySizes.put(st.design().sizeDesc(), putVal);
@@ -1166,7 +1171,7 @@ public class MapOverlayShipCombatPrompt extends MapOverlay implements IVIPListen
                 }
             }
             else if (st.isColony() && st.isArmed()) {
-                if (st.empire == player)
+                if (st.empire() == player)
                     mySizes.put(text("MAIN_COLONY_BASES"), putVal);
                 else
                     aiSizes.put(text("MAIN_COLONY_BASES"), putVal);

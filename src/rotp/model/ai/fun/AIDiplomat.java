@@ -1636,7 +1636,7 @@ public class AIDiplomat implements Base, Diplomat {
         // did we win? if aggressive stacks still active, then no
         boolean won = true;
         for (CombatStack st: res.activeStacks()) {
-            if (st.empire.aggressiveWith(empire.id))
+            if (st.empire().aggressiveWith(empire.id))
                 won = false;
         }
         // if we won, then losses don't seem as bad

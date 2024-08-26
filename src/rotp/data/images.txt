@@ -92,6 +92,7 @@ TECH_MISSILE_SHIELD_03        | images/techs/Lightning_Shield.png
 TECH_SQUID_INK                | images/techs/Black_Hole_Generator.png
 TECH_AMOEBA_EAT_SHIPS         | images/techs/Black_Hole_Generator.png
 TECH_RESIST_REPULSOR          | images/techs/Zyro_Shield.png
+TECH_RESIST_STASIS            | images/techs/Zyro_Shield.png
 
 TECH_ENERGY_PULSAR            | images/techs/Energy_Pulsar.png
 TECH_IONIC_PULSAR             | images/techs/Ionic_Pulsar.png

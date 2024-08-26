@@ -32,7 +32,7 @@ public final class ShipDesign extends Design {
     public static final int maxSpecials = 3;
     public static final int[] shipColors = { 0,1,3,4,5,6,8,9,10,11};
     public static final int maxWeapons()                 { return maxWeapons; }
-    public static final int maxSpecials()                { return maxSpecials; }
+//    public static final int maxSpecials()                { return maxSpecials; }
 
     public static final int COLONY = 1;
     public static final int SCOUT = 2;
@@ -46,6 +46,8 @@ public final class ShipDesign extends Design {
     public static final int LARGE = 2;
     public static final int HUGE = 3;
 
+    public int maxSpecials()                { return special.length; }
+
     private ShipComputer computer;
     private ShipShield shield;
     private ShipECM ecm;
@@ -54,8 +56,7 @@ public final class ShipDesign extends Design {
     private ShipManeuver maneuver;
     private final ShipWeapon[] weapon = new ShipWeapon[maxWeapons];
     private final int[] wpnCount = new int[maxWeapons];
-    private final ShipSpecial[] special = new ShipSpecial[maxSpecials];
-    private ShipSpecial[] extraSpecial; // BR: for some Space Monsters
+    private final ShipSpecial[] special; // BR: to be initialized later to accommodate monsters
     private int size = SMALL;
     private int mission = SCOUT;
     private int unusedTurns = 0;     // # turns while built but unused by FleetCommander
@@ -69,7 +70,12 @@ public final class ShipDesign extends Design {
     private String iconKey;
     private int shipColor;
     private final Integer hashCode;
-    private int customHitPoints = 0; // BR: for monsters
+    private Integer monsterHitPoints;	// BR: for monsters only
+    private Integer monsterBeamDefense;	// BR: for monsters only
+    private Integer monsterEcmDefense;	// BR: for monsters only
+    private Integer monsterAttackLevel;	// BR: for monsters only
+    private Integer monsterInitiative;	// BR: for monsters only
+    private Integer monsterManeuver;	// BR: for monsters only
     private transient ImageIcon icon;
     private transient Image image;
     private transient float costBC;
@@ -95,8 +101,13 @@ public final class ShipDesign extends Design {
     @Override
     public boolean isShip()                 { return true; }
 
-    public int customHitPoints()            { return customHitPoints; }
-    public void customHitPoints(int hit)    { customHitPoints = hit; }
+    //public int specialSize()                { return special.length; }
+    public void monsterHitPoints(int hit)   { monsterHitPoints = hit; }
+    public void monsterBeamDefense(int def) { monsterBeamDefense = def; }
+    public void monsterEcmDefense(int ecm)  { monsterEcmDefense = ecm; }
+    public void monsterAttackLevel(int lev) { monsterAttackLevel = lev; }
+    public void monsterInitiative(int lev)  { monsterInitiative = lev; }
+    public void monsterManeuver(int speed)  { monsterManeuver = speed; }
     public ShipComputer computer()          { return computer; }
     public void computer(ShipComputer c)    { computer = c; }
     public ShipShield shield()              { return shield; }
@@ -163,36 +174,48 @@ public final class ShipDesign extends Design {
         return "";
     }
     @Override
-    public ImageIcon icon()                 {
+    public ImageIcon icon()         {
         if (icon == null)
             icon = icon(iconKey);
         return icon;
     }
-    public ShipDesign()            { this(SMALL); }
-    public ShipDesign(int sz)      {
-    	if (sz<0) { // BR: for custom Hit points design
-    		customHitPoints = -sz;
-    		if (customHitPoints < 100)
-    			sz = SMALL;
-    		else if (customHitPoints < 500)
-    			sz = MEDIUM;
-    		else if (customHitPoints < 2500)
-    			sz = LARGE;
-    		else
-    			sz = HUGE;
-        }
-
-        size(sz);
-        active = false;
-        for (int i=0; i<maxWeapons(); i++)  wpnCount(i,0);
+    public ShipDesign()             { this(SMALL); }
+    private int setMonsterHitPointsAndGetSize(int hitPts) {
+    	monsterHitPoints = hitPts;
+		if (monsterHitPoints < 25)
+			return SMALL;
+		else if (monsterHitPoints < 150)
+			return MEDIUM;
+		else if (monsterHitPoints < 750)
+			return LARGE;
+		else
+			return HUGE;
+    }
+    public ShipDesign(int numSpecials, int hullHitPoints) {
+    	special  = new ShipSpecial[numSpecials];
         hashCode = galaxy().nextHashCodeShipDesign();
+		monsterHitPoints = hullHitPoints;
+    	int sz = setMonsterHitPointsAndGetSize(hullHitPoints);
+    	init(sz);
+    }
+    public ShipDesign(int sz)      {
+    	special  = new ShipSpecial[maxSpecials];
+        hashCode = galaxy().nextHashCodeShipDesign();
+    	if (sz<0)	// BR: for custom Hit points design
+    		sz = setMonsterHitPointsAndGetSize(-sz);
+    	init(sz);
+    }
+    private void init(int sz)      {
+    	size(sz);
+        active = false;
+        for (int i=0; i<maxWeapons(); i++)
+        	wpnCount(i,0);
     }
     public boolean isScout()       { return (mission() == SCOUT); }
     public boolean isFighter()     { return (mission() == FIGHTER); }
     public boolean isColonyShip()  { return (mission() == COLONY); }
     public boolean isBomber()      { return (mission() == BOMBER); }
     public boolean isDestroyer()   { return (mission() == DESTROYER); }
-
 
     public void clearEmptyWeapons() {
         for (int i=0;i<wpnCount.length;i++) {
@@ -294,7 +317,7 @@ public final class ShipDesign extends Design {
                     return false;
             }
         }
-        for (int i=0;i<ShipDesign.maxSpecials();i++) {
+        for (int i=0;i<d.maxSpecials();i++) {
             if (special(i) != d.special(i))
                 return false;
         }
@@ -353,7 +376,7 @@ public final class ShipDesign extends Design {
         }
     }
     public float spaceUsed() { return spaceUsed(size()); }
-    public float spaceUsed(int s) {
+    private float spaceUsed(int s) {
         int tempSize = size();
         size(s);
 
@@ -564,8 +587,8 @@ public final class ShipDesign extends Design {
     public int weaponMax(int i)     { return (int)Math.max(0, weapon(i).max(this, i));  }
     public int baseHits()           { return  baseHits(size()); }
     public int baseHits(int sizeId) {
-    	if (customHitPoints>0) // BR: for Monsters
-    		return customHitPoints;
+    	if (monsterHitPoints != null) // BR: for Monsters
+    		return monsterHitPoints;
     	// modnar: change base ship HP for new races
     	// modnar: NeoHumans, 66.6% HP
     	// BR: put the method in Race
@@ -578,7 +601,7 @@ public final class ShipDesign extends Design {
             default     : return 0;
         }
     }
-    public int baseCost()           { return  baseCost(size()); }
+    private int baseCost()          { return  baseCost(size()); }
     public int baseCost(int sizeId) {
         switch(sizeId) {
             case SMALL  : return 6;
@@ -597,27 +620,39 @@ public final class ShipDesign extends Design {
             default     : return 0;
         }
     }
-    public float hits()        { return armor().hits(this); }
-    public float initiative() {
+    public float hits()        {
+    	if (monsterHitPoints != null)
+    		return monsterHitPoints;
+    	else
+    		return armor().hits(this);
+    		
+    }
+    public float initiative()  {
+    	if (monsterInitiative != null)
+    		return monsterInitiative;
         float lvl = computer().level() + maneuverability();
         for (ShipSpecial spec: special)
             lvl += spec.initiativeBonus();
         return lvl;
     }
     public float attackLevel() {
+    	if (monsterAttackLevel != null)
+    		return monsterAttackLevel;
         int lvl = computer().level();
         for (ShipSpecial spec: special)
             lvl += spec.attackBonus();
         return lvl;
     }
     public float shieldLevel() { return shield().level(); }
-    public int combatSpeed() {
+    public int combatSpeed()   {
         int speed = maneuver().combatSpeed();
         for (int i=0;i<maxSpecials();i++)
             speed += special(i).speedBonus();
         return max(speed,1);
     }
     public int maneuverability() {
+    	if (monsterManeuver != null)
+    		return monsterManeuver;
         int speed = baseMissileDefense() + maneuver().level();
         for (int i=0;i<maxSpecials();i++)
             speed += special(i).speedBonus();
@@ -654,12 +689,16 @@ public final class ShipDesign extends Design {
         return maxIntercept;
     }
     public int missileDefense() {
+    	if (monsterEcmDefense != null)
+    		return monsterEcmDefense;
         int defense = baseMissileDefense() + ecm().level() + maneuver().level();
         for (int i=0;i<maxSpecials();i++)
             defense += special(i).defenseBonus();
         return defense;
     }
     public int beamDefense() {
+    	if (monsterBeamDefense != null)
+    		return monsterBeamDefense;
         int defense = baseMissileDefense() + maneuver().level();
         for (int i=0;i<maxSpecials();i++)
             defense += special(i).defenseBonus();
@@ -677,6 +716,18 @@ public final class ShipDesign extends Design {
             if (special(i).allowsTeleporting())
                 return true;
         }
+        return false;
+    }
+    public boolean ignoreRepulsors() {
+        for (ShipSpecial spec: special)
+            if(spec.resistRepulsors())
+                return true;
+        return false;
+    }
+    public boolean immuneToStasis() {
+    	for (ShipSpecial spec: special)
+            if (spec.isImmuneToStasis())
+                return true;
         return false;
     }
     public float blackHoleDef() {
@@ -721,6 +772,7 @@ public final class ShipDesign extends Design {
         }
         return null;
     }
+
     public boolean canUpgradeBattleComputer() {
         return empire().tech().topBattleComputerTech().level > computer().tech().level();
     }

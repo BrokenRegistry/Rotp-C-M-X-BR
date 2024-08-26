@@ -38,7 +38,7 @@ public class CombatStackMissile extends CombatStack {
         origNum = num = n*miss.scatterAttacks();
         owner = ship;
         mgr = ship.mgr;
-        empire = ship.empire;
+        empire(ship.empire());
         target = ship.target;
         ally = ship.ally;
         x = ship.x;
@@ -48,8 +48,8 @@ public class CombatStackMissile extends CombatStack {
         attackLevel = ship.attackLevel();
 
         int imgW = BasePanel.s60;
-        if (options().shipBasedMissiles() && empire.isEmpire()) {
-        	missiles = empire.shipLab().missileImage(miss.tech(), imgW, imgW/5);
+        if (options().shipBasedMissiles() && empire().isEmpire()) {
+        	missiles = empire().shipLab().missileImage(miss.tech(), imgW, imgW/5);
         }
         else {
             Image missileImg = image(miss.tech().imageKey());

@@ -20,81 +20,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rotp.model.ai.MonsterShipCaptain;
+import rotp.model.ai.interfaces.ShipCaptain;
 import rotp.model.empires.Empire;
 import rotp.model.galaxy.SpaceMonster;
 import rotp.model.galaxy.StarSystem;
 import rotp.model.game.GameSession;
-import rotp.model.ships.ShipComponent;
+import rotp.model.ships.ShipDesign;
 
 public class CombatStackMonster extends CombatStackShip {
-	private final SpaceMonster monster;
-	private final boolean orionGuardian;
+	//private final SpaceMonster monster;
 	private final boolean fusionGuardian;
 	private final boolean moo1Monster;
 	private final boolean rotPMonster;
 	private final boolean fusionMonster;
-	
-	public final List<ShipComponent> weapons = new ArrayList<>();
+	private final Color	  shieldColor;
+	private final String  monsterKey;
 
-	protected String name;
-
-	public CombatStackMonster(SpaceMonster m, String key, Float level, int desId, boolean fusion) {
+	public CombatStackMonster(SpaceMonster m, String key, Float level, int desId, boolean fusion, Color shieldC) {
 		super(m, desId, GameSession.instance().galaxy().shipCombat());
-		orionGuardian	= m.isGuardian();
-		fusionGuardian	= m.isMonsterGuardian();
+		fusionGuardian	= m.isFusionGuardian();
 		moo1Monster		= options().isMoO1Monster();
 		fusionMonster	= fusion;
 		rotPMonster		= !(fusionMonster || moo1Monster);
-		monster	= m;
-		name  	= key;
-		image	= image(name);
-		captain = new MonsterShipCaptain(monster);
+		shieldColor		= shieldC;
+		monsterKey  	= key;
+		image			= image(monsterKey);
 	}
-	@Override protected void initDesign(int id)	{ design = fleet.design(id);}
-	@Override public boolean isShip()			{ return false; }
-	@Override public boolean isMonster()		{ return true; }
-	@Override public boolean isArmed()			{ return true; }
-	@Override public String	 name()				{
+	@Override protected ShipDesign getDesign(int id)	{ return fleet().design(id); }
+	@Override protected ShipCaptain getCaptain()		{ return new MonsterShipCaptain(spaceMonster()); }
+	@Override public boolean isShip()					{ return false; }
+	@Override public boolean isMonster()				{ return true; }
+	@Override public boolean isArmed()					{ return true; }
+	@Override public String	 name()						{
 		if (fusionGuardian)
-			return text("PLANET_" + name);
+			return text("PLANET_" + monsterKey);
 		else
-			return text(name);
+			return text(monsterKey);
 	}
-	@Override public Color shieldBaseColor()	{ return Color.red; }
-	@Override public void recordKills(int num)	{  }
-	@Override public void becomeDestroyed()		{ destroyed = true; num = 0;}
-	@Override public void endTurn()				{
-		if (rotPMonster) {
-			if (!destroyed())
-				finishMissileRemainingMoves();
-			List<CombatStackMissile> missiles = new ArrayList<>(targetingMissiles);
-			for (CombatStackMissile miss : missiles)
-				miss.endTurn();
-		}
-		else
-			super.endTurn();
+	@Override public Color shieldBaseColor()			{ return shieldColor; }
+	@Override public void recordKills(int num)			{  }
+	@Override public void endTurn()						{
+		if (!destroyed())
+			finishMissileRemainingMoves();
+		List<CombatStackMissile> missiles = new ArrayList<>(targetingMissiles);
+		for (CombatStackMissile miss : missiles)
+			miss.endTurn();
 	}
-	@Override public float initiative()			{
+	@Override public float initiative()					{
 		if (rotPMonster)
 			return 1;
 		else
 			return super.initiative();
 	}
-	@Override public void loseShip()			{
-		if (rotPMonster) {
-			int lost = maxStackHits() > 0 ? 1 : num;
-			hits(maxStackHits());
-			shield = maxShield;
-			num = max(0, num - lost);
-			if (destroyed() && (mgr != null))
-				mgr.destroyStack(this);
-		}
-		super.loseShip();
-	}
-	@Override public boolean canRetreat()		{ return false; }
+	@Override public boolean canRetreat()				{ return false; }
 	@Override public boolean retreatToSystem(StarSystem s)				{ return false; }
 	@Override public boolean canPotentiallyAttack(CombatStack target)	{
-		Empire emp = target.empire;
+		Empire emp = target.empire();
 		return emp != null; // You won't them attacking other wandering monsters!
 	}
 	@Override public boolean hostileTo(CombatStack st, StarSystem sys)	{ return !st.isMonster(); }
@@ -105,6 +86,11 @@ public class CombatStackMonster extends CombatStackShip {
 			return super.selectBestWeapon(target);
 
 	}
+	@Override public int optimalFiringRange(CombatStack tgt)			{
+		return max(1, super.optimalFiringRange(tgt));
+	}
 
-	public SpaceMonster spaceMonster()	{ return monster; }
+	public final Color shieldColor()			{ return shieldColor; }
+	public final SpaceMonster spaceMonster()	{ return (SpaceMonster) fleet(); }
+	public final String monsterKey()			{ return monsterKey; }
 }

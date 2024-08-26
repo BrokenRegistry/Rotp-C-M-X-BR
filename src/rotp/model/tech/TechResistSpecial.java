@@ -17,13 +17,15 @@ package rotp.model.tech;
 
 import rotp.model.combat.CombatStack;
 import rotp.model.empires.Empire;
-import rotp.model.ships.ShipSpecialAmoebaEatShips;
-import rotp.ui.combat.ShipBattleUI;
+import rotp.model.empires.Race;
+import rotp.model.ships.ShipSpecialResistSpecial;
 
-public final class TechAmoebaEatShips extends Tech {
+public final class TechResistSpecial extends Tech {
 	public int range = 1;
+	public boolean resistRepulsors = false;
+	public boolean immuneToStasis  = false;
 
-	public TechAmoebaEatShips(String typeId, int lv, int seq, boolean b, TechCategory c) {
+	public TechResistSpecial(String typeId, int lv, int seq, boolean b, TechCategory c) {
 		id(typeId, seq);
 		typeSeq = seq;
 		level = lv;
@@ -34,45 +36,32 @@ public final class TechAmoebaEatShips extends Tech {
 	}
 	@Override public void init()	{
 		super.init();
-		techType = Tech.EAT_SHIPS;
+		techType = Tech.RESIST_SPECIAL;
 		switch(typeSeq) {
-			case 0:
-				cost = 1000;
-				size = 700;
-				power = 1000;
-				range = 1;
-				break;
+		case 0:	// Resist Repulsor
+			resistRepulsors = true;
+			cost = 1000;
+			size = 700;
+			power = 1000;
+			range = 1;
+			break;
+		case 1:	// Resist Stasis
+			immuneToStasis = true;
+			cost = 1000;
+			size = 700;
+			power = 1000;
+			range = 1;
+			break;
 		}
 	}
 	@Override public boolean isMonsterTech()			{ return true; }
 	@Override public float baseValue(Empire c)			{ return c.ai().scientist().baseValue(this); }
 	@Override public boolean providesShipComponent()	{ return true; }
+	@Override public boolean canBeResearched(Race r)	{ return false; }
 	@Override public void provideBenefits(Empire c)		{
 		super.provideBenefits(c);
-		ShipSpecialAmoebaEatShips sh = new ShipSpecialAmoebaEatShips(this);
+		ShipSpecialResistSpecial sh = new ShipSpecialResistSpecial(this);
 		c.shipLab().addSpecial(sh);
 	}
-	@Override public void drawSpecialAttack(CombatStack source, CombatStack target, int wpnNum, float dmg) {
-		ShipBattleUI ui = source.mgr.ui;
-		if (ui == null)
-			return;
-
-		if (!source.mgr.showAnimations())
-			return;
-
-		if (target == null)
-			return;
-
-		if (!target.isShip() && !target.isColony())
-			return;
-
-		// only eats ships animations
-		if (target.isShip()) {
-			target.drawFadeOut(.025f);
-			ui.paintAllImmediately();
-			sleep(250);
-		}
-
-		source.mgr.performingStackTurn = false;
-	}
+	@Override public void drawSpecialAttack(CombatStack src, CombatStack tar, int num, float dmg) {}
 }
